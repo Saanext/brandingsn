@@ -126,7 +126,7 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleFinalSubmit)} className="space-y-8">
-            <div>
+            <div key={currentQuestion.field}>
               <FormField
                 control={form.control}
                 name={currentQuestion.field as keyof BrandFormValues}
