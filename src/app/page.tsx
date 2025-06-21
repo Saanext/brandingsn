@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -35,10 +35,19 @@ interface BrandKit {
   social: CreateSocialMediaMockupOutput;
 }
 
+const fontOptions = [
+  { value: 'inter', label: 'Inter' },
+  { value: 'playfair', label: 'Playfair Display' },
+  { value: 'oswald', label: 'Oswald' },
+  { value: 'lato', label: 'Lato' },
+];
+
 const themeConfigSchema = z.object({
   primaryColor: z.string(),
   accentColor: z.string(),
   backgroundColor: z.string(),
+  headlineFont: z.string(),
+  bodyFont: z.string(),
   logoDescription: z.string().optional(),
 });
 type ThemeConfigFormValues = z.infer<typeof themeConfigSchema>;
@@ -105,9 +114,27 @@ const ThemeConfigForm = ({ palette, onSubmit, isLoading }: { palette: Palette, o
       primaryColor: palette.colors[0],
       accentColor: palette.colors[1],
       backgroundColor: palette.colors[4],
+      headlineFont: 'inter',
+      bodyFont: 'inter',
       logoDescription: '',
     },
   });
+  
+  const headlineFont = form.watch('headlineFont');
+  const bodyFont = form.watch('bodyFont');
+
+  useEffect(() => {
+    if (headlineFont) {
+      document.documentElement.style.setProperty('--font-headline', `var(--font-${headlineFont})`);
+    }
+  }, [headlineFont]);
+
+  useEffect(() => {
+    if (bodyFont) {
+      document.documentElement.style.setProperty('--font-body', `var(--font-${bodyFont})`);
+    }
+  }, [bodyFont]);
+
 
   const ColorSelectField = ({ name, label }: { name: keyof ThemeConfigFormValues, label: string }) => (
     <FormField
@@ -142,26 +169,73 @@ const ThemeConfigForm = ({ palette, onSubmit, isLoading }: { palette: Palette, o
     />
   );
   
+  const FontSelectField = ({ name, label }: { name: keyof ThemeConfigFormValues, label: string }) => (
+    <FormField
+      control={form.control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <FormControl>
+              <SelectTrigger className={cn(
+                field.value === 'playfair' && 'font-playfair',
+                field.value === 'oswald' && 'font-oswald',
+                field.value === 'lato' && 'font-lato',
+                field.value === 'inter' && 'font-inter',
+              )}>
+                <SelectValue />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              {fontOptions.map(font => (
+                <SelectItem key={font.value} value={font.value} className={cn(
+                  font.value === 'playfair' && 'font-playfair',
+                  font.value === 'oswald' && 'font-oswald',
+                  font.value === 'lato' && 'font-lato',
+                  font.value === 'inter' && 'font-inter',
+                )}>
+                  {font.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+  
   return (
     <div className="w-full max-w-7xl mt-12 animate-in fade-in duration-500">
        <div className="text-center mb-12">
         <h2 className="font-headline text-4xl md:text-5xl">Fine-tune Your Assets</h2>
-        <p className="text-muted-foreground font-body text-lg">Assign color roles and describe your ideal logo.</p>
+        <p className="text-muted-foreground font-body text-lg">Assign color roles, select fonts, and describe your ideal logo.</p>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         <ColorPaletteDisplay {...palette} />
         <Card className="shadow-xl">
           <CardHeader>
             <CardTitle className="font-headline text-3xl">Configure Assets</CardTitle>
-            <CardDescription>Specify how colors should be used in your brand assets.</CardDescription>
+            <CardDescription>Specify how colors and fonts should be used in your brand assets.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <ColorSelectField name="primaryColor" label="Primary Color" />
-                  <ColorSelectField name="accentColor" label="Accent Color" />
-                  <ColorSelectField name="backgroundColor" label="Background Color" />
+                <div className="space-y-4">
+                  <p className="text-sm font-medium">Color Roles</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <ColorSelectField name="primaryColor" label="Primary Color" />
+                    <ColorSelectField name="accentColor" label="Accent Color" />
+                    <ColorSelectField name="backgroundColor" label="Background Color" />
+                  </div>
+                </div>
+                 <div className="space-y-4">
+                  <p className="text-sm font-medium">Typography</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FontSelectField name="headlineFont" label="Headline Font" />
+                    <FontSelectField name="bodyFont" label="Body Font" />
+                  </div>
                 </div>
                 <FormField
                   control={form.control}
@@ -242,6 +316,8 @@ export default function Home() {
   const handleSelectPalette = (palette: Palette) => {
     setSelectedPalette(palette);
     updateTheme(palette);
+    document.documentElement.style.setProperty('--font-headline', 'var(--font-inter)');
+    document.documentElement.style.setProperty('--font-body', 'var(--font-inter)');
     setStep(3);
   };
 
@@ -252,6 +328,9 @@ export default function Home() {
     setError(null);
 
     try {
+      const headlineFontLabel = fontOptions.find(f => f.value === config.headlineFont)?.label || 'Inter';
+      const bodyFontLabel = fontOptions.find(f => f.value === config.bodyFont)?.label || 'Inter';
+
       const [logoResult, themeResult] = await Promise.all([
         visualizeLogo({
           ...brandInfo,
@@ -263,8 +342,8 @@ export default function Home() {
           primaryColor: config.primaryColor,
           backgroundColor: config.backgroundColor,
           accentColor: config.accentColor,
-          headlineFont: 'Inter',
-          bodyFont: 'Inter',
+          headlineFont: headlineFontLabel,
+          bodyFont: bodyFontLabel,
         }),
       ]);
 
@@ -383,6 +462,8 @@ export default function Home() {
                      setPalettes(null);
                      setSelectedPalette(null);
                      setBrandInfo(null);
+                     document.documentElement.style.setProperty('--font-headline', 'var(--font-inter)');
+                     document.documentElement.style.setProperty('--font-body', 'var(--font-inter)');
                    }}>Start Over</Button>
                 </div>
               </div>
