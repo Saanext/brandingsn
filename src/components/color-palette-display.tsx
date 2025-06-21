@@ -22,7 +22,7 @@ export function ColorPaletteDisplay({ paletteName, description, colors }: ColorP
   };
 
   return (
-    <Card className="h-full shadow-lg">
+    <Card className="h-full shadow-lg bg-card/80 backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="font-headline text-2xl">{paletteName}</CardTitle>
         <CardDescription>{description}</CardDescription>

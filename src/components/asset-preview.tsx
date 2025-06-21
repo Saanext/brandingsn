@@ -12,7 +12,7 @@ interface AssetPreviewProps {
 
 export function AssetPreview({ title, description, src, fileName }: AssetPreviewProps) {
   return (
-    <Card className="flex flex-col h-full shadow-lg">
+    <Card className="flex flex-col h-full shadow-lg bg-card/80 backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="font-headline text-2xl">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>

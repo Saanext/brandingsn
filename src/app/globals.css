@@ -94,3 +94,70 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Background Animation Styles */
+.bg-neural-net {
+    background-image:
+        radial-gradient(circle at 1px 1px, hsl(var(--primary) / 0.1) 1px, transparent 0);
+    background-size: 3rem 3rem;
+    animation: pan-neural-net 20s linear infinite;
+}
+
+@keyframes pan-neural-net {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 3rem 3rem;
+    }
+}
+
+
+.wave {
+    background: radial-gradient(circle at center, hsl(var(--accent) / 0.05), hsl(var(--primary) / 0.05));
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.6;
+    position: absolute;
+    aspect-ratio: 1;
+    z-index: -1;
+}
+
+.wave:nth-of-type(1) {
+    width: 40vw;
+    top: 10vh;
+    left: 10vw;
+    animation: wave-animation 15s infinite ease-in-out;
+}
+
+.wave:nth-of-type(2) {
+    width: 50vw;
+    bottom: 5vh;
+    right: 5vw;
+    animation: wave-animation 20s infinite ease-in-out -5s;
+}
+
+.wave:nth-of-type(3) {
+    width: 35vw;
+    bottom: 20vh;
+    left: 25vw;
+    animation: wave-animation 25s infinite ease-in-out -10s;
+}
+
+@keyframes wave-animation {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+    25% {
+        transform: translate(20px, 40px) scale(1.1);
+    }
+    50% {
+        transform: translate(-10px, -20px) scale(1);
+    }
+    75% {
+        transform: translate(30px, -30px) scale(1.2);
+    }
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+}

@@ -24,7 +24,7 @@ export function BrandGuidelinesDisplay({
   guidelines,
 }: BrandGuidelinesDisplayProps) {
   return (
-    <Card className="flex flex-col h-full shadow-lg">
+    <Card className="flex flex-col h-full shadow-lg bg-card/80 backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="font-headline text-2xl">
           Brand Guidelines

@@ -141,7 +141,7 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
   const Icon = currentQuestion.icon;
 
   return (
-    <Card className="w-full max-w-2xl animate-in fade-in duration-500">
+    <Card className="w-full max-w-2xl animate-in fade-in duration-500 bg-card/80 backdrop-blur-sm">
       <CardHeader>
         <Progress value={((currentStep + 1) / quizSteps.length) * 100} className="mb-4" />
         <CardTitle className="font-headline text-2xl md:text-3xl">{currentQuestion.title}</CardTitle>

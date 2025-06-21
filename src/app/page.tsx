@@ -26,6 +26,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Terminal, Wand2, Palette, Paintbrush, Loader2, ArrowRight, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { BackgroundAnimation } from '@/components/background-animation';
 
 
 type Palette = GenerateColorPaletteOutput['palettes'][0];
@@ -90,7 +91,7 @@ const PaletteSelection = ({ palettes, onSelect, onBack }: { palettes: Palette[],
     </div>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {palettes.map((palette) => (
-        <Card key={palette.paletteName} className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group overflow-hidden" onClick={() => onSelect(palette)}>
+        <Card key={palette.paletteName} className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group overflow-hidden bg-card/80 backdrop-blur-sm" onClick={() => onSelect(palette)}>
           <CardContent className="p-0">
              <div className="flex h-32">
               {palette.colors.map(color => (
@@ -220,7 +221,7 @@ const ThemeConfigForm = ({ palette, onSubmit, isLoading, onBack }: { palette: Pa
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         <ColorPaletteDisplay {...palette} />
-        <Card className="shadow-lg">
+        <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="font-headline text-2xl md:text-3xl">Configure Assets</CardTitle>
             <CardDescription>Specify how colors and fonts should be used.</CardDescription>
@@ -403,8 +404,9 @@ export default function Home() {
   );
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-background">
-       <header className="sticky top-0 z-40 w-full border-b bg-background">
+    <div className="flex min-h-screen w-full flex-col">
+       <BackgroundAnimation />
+       <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
         <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
           <div className="flex gap-6 md:gap-10">
             <a href="#" className="flex items-center space-x-2">
@@ -437,7 +439,7 @@ export default function Home() {
               {isLoading && <LoadingState />}
 
               {error && !isLoading && (
-                <Alert variant="destructive" className="mt-8 max-w-2xl">
+                <Alert variant="destructive" className="mt-8 max-w-2xl bg-destructive/20 backdrop-blur-sm">
                   <Terminal className="h-4 w-4" />
                   <AlertTitle>Generation Error</AlertTitle>
                   <AlertDescription>{error}</AlertDescription>
@@ -495,7 +497,7 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="border-t">
+      <footer className="border-t bg-background/80 backdrop-blur-sm">
         <div className="container mx-auto flex h-16 items-center px-4 md:px-6">
           <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} Brand Genie. All rights reserved.</p>
           <nav className="ml-auto flex gap-4 sm:gap-6">
