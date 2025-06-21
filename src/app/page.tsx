@@ -386,9 +386,9 @@ export default function Home() {
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-40 bg-card">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center space-y-4 text-center">
+        <div className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="flex flex-col items-center space-y-6 text-center">
               <div className="flex items-center gap-2 md:gap-4">
                 <BrandIcon className="h-12 w-12 md:h-16 md:w-16 text-primary" />
                 <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl tracking-tighter">
@@ -399,75 +399,72 @@ export default function Home() {
                 Our AI-powered assistant will guide you through a quick quiz to generate a complete, ready-to-use brand kit, including a color palette, logo, and mockups.
               </p>
             </div>
-          </div>
-        </section>
 
-        <section id="generator" className="w-full py-12 md:py-24 lg:py-32 bg-background">
-          <div className="container px-4 md:px-6 flex flex-col items-center">
-            
-            {step === 1 && <BrandForm onSubmit={handleGeneratePalettes} isLoading={isLoading} />}
-            {step === 2 && palettes && <PaletteSelection palettes={palettes} onSelect={handleSelectPalette} onBack={() => setStep(1)} />}
-            {step === 3 && selectedPalette && <ThemeConfigForm palette={selectedPalette} onSubmit={handleGenerateAssets} isLoading={isLoading} onBack={() => setStep(2)} />}
-            
-            {isLoading && <LoadingState />}
-            
-            {error && !isLoading && (
-              <Alert variant="destructive" className="mt-8 max-w-2xl">
-                <Terminal className="h-4 w-4" />
-                <AlertTitle>Generation Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+            <div id="generator" className="mt-12 flex flex-col items-center">
+              {step === 1 && <BrandForm onSubmit={handleGeneratePalettes} isLoading={isLoading} />}
+              {step === 2 && palettes && <PaletteSelection palettes={palettes} onSelect={handleSelectPalette} onBack={() => setStep(1)} />}
+              {step === 3 && selectedPalette && <ThemeConfigForm palette={selectedPalette} onSubmit={handleGenerateAssets} isLoading={isLoading} onBack={() => setStep(2)} />}
 
-            {step === 4 && brandKit && !isLoading && (
-              <div className="mt-12 w-full max-w-7xl animate-in fade-in duration-500">
-                <div className="text-center mb-12">
-                   <h2 className="font-headline text-3xl md:text-5xl">Your Brand Kit is Ready!</h2>
-                   <p className="text-muted-foreground font-body md:text-lg max-w-3xl mx-auto">Congratulations! Here is your complete brand kit. You can download each asset individually and start using them right away.</p>
-                </div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                  <div className="lg:col-span-1 flex flex-col gap-8">
-                     <ColorPaletteDisplay {...brandKit.palette} />
-                     <AssetPreview
-                        title="Social Media Mockup"
-                        description="An example post to show how your brand looks on social media. Download it for inspiration."
-                        src={brandKit.social.mockupDataUri}
-                        fileName="social-media-mockup.png"
-                      />
+              {isLoading && <LoadingState />}
+
+              {error && !isLoading && (
+                <Alert variant="destructive" className="mt-8 max-w-2xl">
+                  <Terminal className="h-4 w-4" />
+                  <AlertTitle>Generation Error</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              {step === 4 && brandKit && !isLoading && (
+                <div className="mt-12 w-full max-w-7xl animate-in fade-in duration-500">
+                  <div className="text-center mb-12">
+                     <h2 className="font-headline text-3xl md:text-5xl">Your Brand Kit is Ready!</h2>
+                     <p className="text-muted-foreground font-body md:text-lg max-w-3xl mx-auto">Congratulations! Here is your complete brand kit. You can download each asset individually and start using them right away.</p>
                   </div>
-                  <div className="lg:col-span-1 flex flex-col gap-8">
-                      <AssetPreview
-                        title="Logo Visualization"
-                        description="A unique logo concept generated for your brand. Download and use it as your official logo."
-                        src={brandKit.logo.logoDataUri}
-                        fileName="logo.png"
-                      />
-                      <AssetPreview
-                        title="Business Card Mockup"
-                        description="A professional business card design, ready for print. Download the design to send to a printer."
-                        src={brandKit.businessCard.mockupDataUri}
-                        fileName="business-card-mockup.png"
-                      />
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                    <div className="lg:col-span-1 flex flex-col gap-8">
+                       <ColorPaletteDisplay {...brandKit.palette} />
+                       <AssetPreview
+                          title="Social Media Mockup"
+                          description="An example post to show how your brand looks on social media. Download it for inspiration."
+                          src={brandKit.social.mockupDataUri}
+                          fileName="social-media-mockup.png"
+                        />
+                    </div>
+                    <div className="lg:col-span-1 flex flex-col gap-8">
+                        <AssetPreview
+                          title="Logo Visualization"
+                          description="A unique logo concept generated for your brand. Download and use it as your official logo."
+                          src={brandKit.logo.logoDataUri}
+                          fileName="logo.png"
+                        />
+                        <AssetPreview
+                          title="Business Card Mockup"
+                          description="A professional business card design, ready for print. Download the design to send to a printer."
+                          src={brandKit.businessCard.mockupDataUri}
+                          fileName="business-card-mockup.png"
+                        />
+                    </div>
+                  </div>
+                   <div className="text-center mt-12 flex flex-col sm:flex-row justify-center gap-4">
+                      <Button variant="outline" onClick={() => setStep(3)} className="w-full sm:w-auto">
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Config
+                      </Button>
+                      <Button className="w-full sm:w-auto" onClick={() => {
+                       setStep(1);
+                       setBrandKit(null);
+                       setPalettes(null);
+                       setSelectedPalette(null);
+                       setBrandInfo(null);
+                       document.documentElement.style.setProperty('--font-headline', 'var(--font-inter)');
+                       document.documentElement.style.setProperty('--font-body', 'var(--font-inter)');
+                     }}>Start Over</Button>
                   </div>
                 </div>
-                 <div className="text-center mt-12 flex flex-col sm:flex-row justify-center gap-4">
-                    <Button variant="outline" onClick={() => setStep(3)} className="w-full sm:w-auto">
-                      <ArrowLeft className="mr-2 h-4 w-4" /> Back to Config
-                    </Button>
-                    <Button className="w-full sm:w-auto" onClick={() => {
-                     setStep(1);
-                     setBrandKit(null);
-                     setPalettes(null);
-                     setSelectedPalette(null);
-                     setBrandInfo(null);
-                     document.documentElement.style.setProperty('--font-headline', 'var(--font-inter)');
-                     document.documentElement.style.setProperty('--font-body', 'var(--font-inter)');
-                   }}>Start Over</Button>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </section>
+        </div>
       </main>
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
         <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} Brand Genie. All rights reserved.</p>
