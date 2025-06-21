@@ -9,18 +9,18 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
-import { Factory, Palette, Smile, Loader2, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Factory, Palette, Users, Heart, Sparkles, Loader2, ArrowRight, ArrowLeft } from 'lucide-react';
 
-const formSchema = z.object({
+const quizFormSchema = z.object({
   brandName: z.string().min(2, { message: 'Brand name must be at least 2 characters.' }),
-  industry: z.string().min(3, { message: 'Industry is required.' }),
-  stylePreferences: z.string().min(3, { message: 'Style preferences are required.' }),
-  desiredMood: z.string().min(3, { message: 'Desired mood is required.' }),
+  industry: z.string().min(3, { message: 'Please describe your industry.' }),
+  keywords: z.string().min(3, { message: 'Please provide at least one keyword.' }),
+  targetAudience: z.string().min(3, { message: 'Please describe your target audience.' }),
+  coreMessage: z.string().min(3, { message: 'Please describe your core message.' }),
 });
 
-export type BrandFormValues = z.infer<typeof formSchema>;
+export type BrandFormValues = z.infer<typeof quizFormSchema>;
 
 interface BrandFormProps {
   onSubmit: (data: BrandFormValues) => void;
@@ -30,68 +30,59 @@ interface BrandFormProps {
 const quizSteps = [
   {
     field: "brandName",
-    title: "Question 1/3: What's your brand's name?",
+    icon: Palette,
+    title: "Question 1/5: What's your brand's name?",
     description: "This will be the centerpiece of your new brand identity.",
+    placeholder: "e.g., Nova Robotics"
   },
   {
     field: "industry",
-    title: "Question 2/3: What industry is your brand in?",
-    description: "This helps us understand your brand's context.",
-    options: ["Technology", "Fashion", "Food & Beverage", "Wellness", "E-commerce", "Education"],
+    icon: Factory,
+    title: "Question 2/5: What industry is your brand in?",
+    description: "This helps us understand your brand's context. (e.g., Tech, Fashion, Food)",
+    placeholder: "e.g., Sustainable consumer electronics"
   },
   {
-    field: "styleAndMood",
-    title: "Question 3/3: What's the personality of your brand?",
-    description: "This sets the emotional and visual tone for your brand.",
-    options: [
-      "Modern & Innovative",
-      "Elegant & Luxurious",
-      "Fun & Playful",
-      "Calm & Natural",
-      "Energetic & Exciting",
-      "Trustworthy & Professional",
-      "Friendly & Approachable",
-      "Sophisticated & Minimalist",
-    ],
+    field: "keywords",
+    icon: Sparkles,
+    title: "Question 3/5: What keywords define your brand's style?",
+    description: "Think about personality. List 3-5 keywords.",
+    placeholder: "e.g., Minimal, Modern, Playful, Luxurious"
+  },
+  {
+    field: "targetAudience",
+    icon: Users,
+    title: "Question 4/5: Who is your target audience?",
+    description: "A brief description helps tailor the visual identity.",
+    placeholder: "e.g., Young professionals, families, eco-conscious shoppers"
+  },
+  {
+    field: "coreMessage",
+    icon: Heart,
+    title: "Question 5/5: What's your brand's core message or value?",
+    description: "What is the main idea or feeling you want to convey?",
+    placeholder: "e.g., Connecting people, simplifying life, promoting sustainability"
   },
 ];
-
-
-const quizFormSchema = z.object({
-  brandName: z.string().min(2, { message: "Please enter a brand name of at least 2 characters." }),
-  industry: z.string({ required_error: "Please select an industry." }),
-  customIndustry: z.string().optional(),
-  styleAndMood: z.string({ required_error: "Please select an option." }),
-  customStyleAndMood: z.string().optional(),
-}).partial(); 
 
 export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
   const [currentStep, setCurrentStep] = useState(0);
 
-  const form = useForm<z.infer<typeof quizFormSchema>>({
+  const form = useForm<BrandFormValues>({
     resolver: zodResolver(quizFormSchema),
     defaultValues: {
       brandName: '',
+      industry: '',
+      keywords: '',
+      targetAudience: '',
+      coreMessage: '',
     },
+    mode: 'onTouched',
   });
 
   const handleNext = async () => {
-    let fieldsToValidate: (keyof z.infer<typeof quizFormSchema>)[];
-    switch (currentStep) {
-      case 0:
-        fieldsToValidate = ['brandName'];
-        break;
-      case 1:
-        fieldsToValidate = ['industry'];
-        break;
-      case 2:
-        fieldsToValidate = ['styleAndMood'];
-        break;
-      default:
-        fieldsToValidate = [];
-        break;
-    }
-    const isValid = await form.trigger(fieldsToValidate);
+    const fieldToValidate = quizSteps[currentStep].field as keyof BrandFormValues;
+    const isValid = await form.trigger(fieldToValidate);
 
     if (isValid) {
       setCurrentStep((prev) => prev + 1);
@@ -102,24 +93,12 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
     setCurrentStep((prev) => prev - 1);
   };
   
-  const handleFinalSubmit = (data: z.infer<typeof quizFormSchema>) => {
-    const industry = data.industry === 'other' 
-        ? data.customIndustry || 'General' 
-        : data.industry || 'General';
-    
-    const [style, mood] = (data.styleAndMood === 'other' 
-        ? data.customStyleAndMood || 'Creative & Professional' 
-        : data.styleAndMood || 'Creative & Professional').split(' & ');
-        
-    onSubmit({
-      brandName: data.brandName || "My Awesome Brand",
-      industry: industry.trim(),
-      stylePreferences: style.trim(),
-      desiredMood: mood ? mood.trim() : 'Professional',
-    });
+  const handleFinalSubmit = (data: BrandFormValues) => {
+    onSubmit(data);
   };
 
   const currentQuestion = quizSteps[currentStep];
+  const Icon = currentQuestion.icon;
 
   return (
     <Card className="w-full max-w-2xl shadow-xl animate-in fade-in duration-500">
@@ -131,118 +110,27 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleFinalSubmit)} className="space-y-8">
-            <div className="min-h-[220px]">
-              {currentStep === 0 && (
-                 <FormField
-                  control={form.control}
-                  name="brandName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2"><Palette className="h-4 w-4 text-muted-foreground" /> Brand Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., Nova Robotics" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-              {currentStep === 1 && (
-                 <FormField
-                    control={form.control}
-                    name="industry"
-                    render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel className="flex items-center gap-2"><Factory className="h-4 w-4 text-muted-foreground" /> Industry</FormLabel>
-                        <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            value={field.value}
-                            className="grid grid-cols-2 gap-4"
-                          >
-                            {quizSteps[1].options?.map(option => (
-                              <FormItem key={option} className="flex items-center space-x-3 space-y-0">
-                                <FormControl>
-                                  <RadioGroupItem value={option} />
-                                </FormControl>
-                                <FormLabel className="font-normal">{option}</FormLabel>
-                              </FormItem>
-                            ))}
-                             <FormItem className="flex items-center space-x-3 space-y-0">
-                                <FormControl>
-                                  <RadioGroupItem value="other" />
-                                </FormControl>
-                                <FormLabel className="font-normal">Other...</FormLabel>
-                              </FormItem>
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                        {form.watch('industry') === 'other' && (
-                           <FormField
-                              control={form.control}
-                              name="customIndustry"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Input placeholder="Your industry..." {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                        )}
-                      </FormItem>
-                    )}
-                  />
-              )}
-              {currentStep === 2 && (
-                <FormField
-                    control={form.control}
-                    name="styleAndMood"
-                    render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel className="flex items-center gap-2"><Smile className="h-4 w-4 text-muted-foreground" /> Style & Mood</FormLabel>
-                         <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            value={field.value}
-                            className="grid grid-cols-2 gap-4"
-                          >
-                            {quizSteps[2].options?.map(option => (
-                              <FormItem key={option} className="flex items-center space-x-3 space-y-0">
-                                <FormControl>
-                                  <RadioGroupItem value={option} />
-                                </FormControl>
-                                <FormLabel className="font-normal">{option}</FormLabel>
-                              </FormItem>
-                            ))}
-                             <FormItem className="flex items-center space-x-3 space-y-0">
-                                <FormControl>
-                                  <RadioGroupItem value="other" />
-                                </FormControl>
-                                <FormLabel className="font-normal">Other...</FormLabel>
-                              </FormItem>
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                        {form.watch('styleAndMood') === 'other' && (
-                           <FormField
-                              control={form.control}
-                              name="customStyleAndMood"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Input placeholder="e.g., Corporate & Trustworthy" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                        )}
-                      </FormItem>
-                    )}
-                  />
-              )}
+            <div className="min-h-[150px]">
+              <FormField
+                control={form.control}
+                name={currentQuestion.field as keyof BrandFormValues}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2 text-muted-foreground">
+                      <Icon className="h-4 w-4" /> 
+                      Your Answer
+                    </FormLabel>
+                    <FormControl>
+                      {currentStep === 0 ? (
+                        <Input placeholder={currentQuestion.placeholder} {...field} />
+                      ) : (
+                        <Textarea placeholder={currentQuestion.placeholder} {...field} className="min-h-[100px]" />
+                      )}
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <div className="flex justify-between items-center pt-8">
@@ -262,7 +150,7 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
                       Conjuring...
                     </>
                   ) : (
-                    'Generate Brand Kit'
+                    'Generate Color Palettes'
                   )}
                 </Button>
               )}

@@ -13,9 +13,12 @@ import {z} from 'genkit';
 
 const GenerateColorPaletteInputSchema = z.object({
   brandName: z.string().describe('The name of the brand.'),
-  industry: z.string().describe('The industry of the brand.'),
-  stylePreferences: z.string().describe('The style preferences for the brand.'),
-  desiredMood: z.string().describe('The desired mood or feeling the brand should evoke.'),
+  industry: z.string().describe('The industry the brand operates in.'),
+  keywords: z
+    .string()
+    .describe("Keywords that describe the brand's style and personality."),
+  targetAudience: z.string().describe("The brand's target audience."),
+  coreMessage: z.string().describe('The core message or values of the brand.'),
 });
 export type GenerateColorPaletteInput = z.infer<typeof GenerateColorPaletteInputSchema>;
 
@@ -51,8 +54,9 @@ const prompt = ai.definePrompt({
 
   Brand Name: {{{brandName}}}
   Industry: {{{industry}}}
-  Style Preferences: {{{stylePreferences}}}
-  Desired Mood: {{{desiredMood}}}
+  Keywords for Style & Personality: {{{keywords}}}
+  Target Audience: {{{targetAudience}}}
+  Core Message/Values: {{{coreMessage}}}
 
   Return the color palettes in the following JSON format:
   {
