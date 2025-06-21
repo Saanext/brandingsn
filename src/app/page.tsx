@@ -81,8 +81,8 @@ function hexToHsl(H: string): string {
 const PaletteSelection = ({ palettes, onSelect, onBack }: { palettes: Palette[], onSelect: (palette: Palette) => void, onBack: () => void }) => (
   <div className="w-full max-w-7xl animate-in fade-in duration-500">
     <div className="text-center mb-12">
-      <h2 className="font-headline text-4xl md:text-5xl">Choose Your Color Story</h2>
-      <p className="text-muted-foreground font-body text-lg max-w-3xl mx-auto">We've generated four unique color palettes based on your brand profile. Select one to move on to the next step.</p>
+      <h2 className="font-headline text-3xl md:text-5xl">Choose Your Color Story</h2>
+      <p className="text-muted-foreground font-body md:text-lg max-w-3xl mx-auto">We've generated four unique color palettes based on your brand profile. Select one to move on to the next step.</p>
     </div>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {palettes.map((palette) => (
@@ -211,14 +211,14 @@ const ThemeConfigForm = ({ palette, onSubmit, isLoading, onBack }: { palette: Pa
   return (
     <div className="w-full max-w-7xl mt-12 animate-in fade-in duration-500">
        <div className="text-center mb-12">
-        <h2 className="font-headline text-4xl md:text-5xl">Fine-tune Your Assets</h2>
-        <p className="text-muted-foreground font-body text-lg">Assign color roles and choose fonts for your brand assets.</p>
+        <h2 className="font-headline text-3xl md:text-5xl">Fine-tune Your Assets</h2>
+        <p className="text-muted-foreground font-body md:text-lg">Assign color roles and choose fonts for your brand assets.</p>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         <ColorPaletteDisplay {...palette} />
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="font-headline text-3xl">Configure Assets</CardTitle>
+            <CardTitle className="font-headline text-2xl md:text-3xl">Configure Assets</CardTitle>
             <CardDescription>Specify how colors and fonts should be used.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -377,7 +377,7 @@ export default function Home() {
 
   const LoadingState = () => (
     <div className="mt-12 w-full max-w-4xl text-center animate-pulse">
-      <h2 className="font-headline text-4xl md:text-5xl">{loadingMessage}</h2>
+      <h2 className="font-headline text-3xl md:text-5xl">{loadingMessage}</h2>
       <p className="text-muted-foreground font-body text-lg">Please wait a moment.</p>
       <Loader2 className="mx-auto mt-8 h-12 w-12 animate-spin text-primary" />
     </div>
@@ -389,13 +389,13 @@ export default function Home() {
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-40 bg-card">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center space-y-4 text-center">
-              <div className="flex items-center gap-4">
-                <BrandIcon className="h-16 w-16 text-primary" />
-                <h1 className="font-headline text-5xl md:text-7xl lg:text-8xl tracking-tighter">
+              <div className="flex items-center gap-2 md:gap-4">
+                <BrandIcon className="h-12 w-12 md:h-16 md:w-16 text-primary" />
+                <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl tracking-tighter">
                   Brand Genie
                 </h1>
               </div>
-              <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl font-body">
+              <p className="mx-auto max-w-[700px] text-muted-foreground text-base md:text-xl font-body">
                 Our AI-powered assistant will guide you through a quick quiz to generate a complete, ready-to-use brand kit, including a color palette, logo, and mockups.
               </p>
             </div>
@@ -422,8 +422,8 @@ export default function Home() {
             {step === 4 && brandKit && !isLoading && (
               <div className="mt-12 w-full max-w-7xl animate-in fade-in duration-500">
                 <div className="text-center mb-12">
-                   <h2 className="font-headline text-4xl md:text-5xl">Your Brand Kit is Ready!</h2>
-                   <p className="text-muted-foreground font-body text-lg max-w-3xl mx-auto">Congratulations! Here is your complete brand kit. You can download each asset individually and start using them right away.</p>
+                   <h2 className="font-headline text-3xl md:text-5xl">Your Brand Kit is Ready!</h2>
+                   <p className="text-muted-foreground font-body md:text-lg max-w-3xl mx-auto">Congratulations! Here is your complete brand kit. You can download each asset individually and start using them right away.</p>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                   <div className="lg:col-span-1 flex flex-col gap-8">
@@ -450,11 +450,11 @@ export default function Home() {
                       />
                   </div>
                 </div>
-                 <div className="text-center mt-12 flex justify-center gap-4">
-                    <Button variant="outline" onClick={() => setStep(3)}>
+                 <div className="text-center mt-12 flex flex-col sm:flex-row justify-center gap-4">
+                    <Button variant="outline" onClick={() => setStep(3)} className="w-full sm:w-auto">
                       <ArrowLeft className="mr-2 h-4 w-4" /> Back to Config
                     </Button>
-                    <Button onClick={() => {
+                    <Button className="w-full sm:w-auto" onClick={() => {
                      setStep(1);
                      setBrandKit(null);
                      setPalettes(null);

@@ -17,7 +17,7 @@ export function AssetPreview({ title, description, src, fileName }: AssetPreview
         <CardTitle className="font-headline text-2xl">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow flex items-center justify-center bg-muted/30 rounded-lg m-6 mt-0 p-4">
+      <CardContent className="flex-grow flex items-center justify-center bg-muted/30 rounded-lg m-2 md:m-6 mt-0 p-2 md:p-4">
         {src ? (
           <Image
             src={src}

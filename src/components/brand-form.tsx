@@ -120,7 +120,7 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
     <Card className="w-full max-w-2xl animate-in fade-in duration-500">
       <CardHeader>
         <Progress value={((currentStep + 1) / quizSteps.length) * 100} className="mb-4" />
-        <CardTitle className="font-headline text-3xl">{currentQuestion.title}</CardTitle>
+        <CardTitle className="font-headline text-2xl md:text-3xl">{currentQuestion.title}</CardTitle>
         <CardDescription>{currentQuestion.description}</CardDescription>
       </CardHeader>
       <CardContent>
@@ -164,17 +164,17 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
               />
             </div>
 
-            <div className="flex justify-between items-center pt-8">
-              <Button type="button" variant="outline" onClick={handleBack} disabled={currentStep === 0 || isLoading}>
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-between items-center pt-8 gap-4">
+              <Button type="button" variant="outline" onClick={handleBack} disabled={currentStep === 0 || isLoading} className="w-full sm:w-auto">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back
               </Button>
 
               {currentStep < quizSteps.length - 1 ? (
-                 <Button type="button" onClick={handleNext} disabled={isLoading}>
+                 <Button type="button" onClick={handleNext} disabled={isLoading} className="w-full sm:w-auto">
                   Next <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               ) : (
-                <Button type="submit" disabled={isLoading} className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                <Button type="submit" disabled={isLoading} className="bg-accent hover:bg-accent/90 text-accent-foreground w-full sm:w-auto">
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
