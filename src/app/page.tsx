@@ -51,8 +51,8 @@ export default function Home() {
           primaryColor: paletteData.colors[0],
           backgroundColor: paletteData.colors[4], // Assuming the last color is suitable for background
           accentColor: paletteData.colors[1],
-          headlineFont: 'Belleza',
-          bodyFont: 'Alegreya',
+          headlineFont: 'Inter',
+          bodyFont: 'Inter',
         }),
       ]);
 
