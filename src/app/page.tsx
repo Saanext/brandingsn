@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { generateColorPalette, type GenerateColorPaletteOutput, type GenerateColorPaletteInput } from '@/ai/flows/generate-color-palette';
 import { visualizeLogo, type VisualizeLogoOutput } from '@/ai/flows/visualize-logo';
-import { previewWebsiteTheme, type PreviewWebsiteThemeOutput } from '@/ai/flows/preview-website-theme';
+import { createBusinessCardMockup, type CreateBusinessCardMockupOutput } from '@/ai/flows/create-business-card-mockup';
 import { createSocialMediaMockup, type CreateSocialMediaMockupOutput } from '@/ai/flows/create-social-media-mockup';
 
 import { BrandForm, type BrandFormValues } from '@/components/brand-form';
@@ -30,7 +30,7 @@ type Palette = GenerateColorPaletteOutput['palettes'][0];
 interface BrandKit {
   palette: Palette;
   logo: VisualizeLogoOutput;
-  theme: PreviewWebsiteThemeOutput;
+  businessCard: CreateBusinessCardMockupOutput;
   social: CreateSocialMediaMockupOutput;
 }
 
@@ -325,14 +325,22 @@ export default function Home() {
       const headlineFontLabel = fontOptions.find(f => f.value === config.headlineFont)?.label || 'Inter';
       const bodyFontLabel = fontOptions.find(f => f.value === config.bodyFont)?.label || 'Inter';
 
-      const [logoResult, themeResult] = await Promise.all([
-        visualizeLogo({
+      const logoResult = await visualizeLogo({
+        brandName: brandInfo.brandName,
+        industry: brandInfo.industry,
+        colorPalette: selectedPalette.colors,
+      });
+
+      const [socialResult, businessCardResult] = await Promise.all([
+        createSocialMediaMockup({
           brandName: brandInfo.brandName,
-          industry: brandInfo.industry,
-          colorPalette: selectedPalette.colors,
+          logoDataUri: logoResult.logoDataUri,
+          primaryColor: config.primaryColor,
+          accentColor: config.accentColor,
         }),
-        previewWebsiteTheme({
+        createBusinessCardMockup({
           brandName: brandInfo.brandName,
+          logoDataUri: logoResult.logoDataUri,
           primaryColor: config.primaryColor,
           backgroundColor: config.backgroundColor,
           accentColor: config.accentColor,
@@ -341,18 +349,11 @@ export default function Home() {
         }),
       ]);
 
-      const socialResult = await createSocialMediaMockup({
-        brandName: brandInfo.brandName,
-        logoDataUri: logoResult.logoDataUri,
-        primaryColor: config.primaryColor,
-        accentColor: config.accentColor,
-      });
-
       setBrandKit({
         palette: selectedPalette,
         logo: logoResult,
-        theme: themeResult,
         social: socialResult,
+        businessCard: businessCardResult,
       });
       setStep(4);
 
@@ -442,10 +443,10 @@ export default function Home() {
                         fileName="logo.png"
                       />
                       <AssetPreview
-                        title="Website Theme Preview"
-                        description="A preview of a website hero section."
-                        src={brandKit.theme.websiteThemePreview}
-                        fileName="website-theme-preview.png"
+                        title="Business Card Mockup"
+                        description="A professional business card design."
+                        src={brandKit.businessCard.mockupDataUri}
+                        fileName="business-card-mockup.png"
                       />
                   </div>
                 </div>
