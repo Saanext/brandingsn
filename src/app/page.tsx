@@ -11,6 +11,7 @@ import { visualizeLogo, type VisualizeLogoOutput } from '@/ai/flows/visualize-lo
 import { createBusinessCardMockup, type CreateBusinessCardMockupOutput } from '@/ai/flows/create-business-card-mockup';
 import { createSocialMediaMockup, type CreateSocialMediaMockupOutput } from '@/ai/flows/create-social-media-mockup';
 import { generateBrandGuidelines, type GenerateBrandGuidelinesOutput } from '@/ai/flows/generate-brand-guidelines';
+import { generateBrandNames } from '@/ai/flows/generate-brand-names';
 
 import { BrandForm, type BrandFormValues } from '@/components/brand-form';
 import { ColorPaletteDisplay } from '@/components/color-palette-display';
@@ -414,21 +415,21 @@ export default function Home() {
         </div>
       </header>
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32">
+        <section className="w-full py-12 md:py-20 lg:py-28">
           <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center space-y-6 text-center">
+            <div className="flex flex-col items-center space-y-4 text-center">
               <div className="flex items-center gap-2 md:gap-4">
                 <BrandIcon className="h-12 w-12 md:h-16 md:w-16 text-primary" />
-                <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl tracking-tighter">
+                <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl tracking-tight leading-tight">
                   Brand Genie
                 </h1>
               </div>
-              <p className="mx-auto max-w-[700px] text-muted-foreground text-base md:text-xl font-body">
+              <p className="mx-auto max-w-[700px] text-muted-foreground text-base md:text-xl font-body pt-2">
                 Struggling with a name? Our AI can generate creative and relevant brand name ideas. Our assistant will then guide you through a quick quiz to generate a complete brand kit.
               </p>
             </div>
 
-            <div id="generator" className="mt-12 flex flex-col items-center">
+            <div id="generator" className="mt-16 flex flex-col items-center">
               {step === 1 && <BrandForm onSubmit={handleGeneratePalettes} isLoading={isLoading} />}
               {step === 2 && palettes && <PaletteSelection palettes={palettes} onSelect={handleSelectPalette} onBack={() => setStep(1)} />}
               {step === 3 && selectedPalette && <ThemeConfigForm palette={selectedPalette} onSubmit={handleGenerateAssets} isLoading={isLoading} onBack={() => setStep(2)} />}
