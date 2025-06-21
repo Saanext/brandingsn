@@ -74,24 +74,21 @@ function hexToHsl(H: string): string {
 const PaletteSelection = ({ palettes, onSelect }: { palettes: Palette[], onSelect: (palette: Palette) => void }) => (
   <div className="w-full max-w-7xl animate-in fade-in duration-500">
     <div className="text-center mb-12">
-      <h2 className="font-headline text-4xl md:text-5xl">Choose Your Palette</h2>
-      <p className="text-muted-foreground font-body text-lg">Select a color palette to apply to your brand.</p>
+      <h2 className="font-headline text-4xl md:text-5xl">Visualize Your Brand's Colors</h2>
+      <p className="text-muted-foreground font-body text-lg max-w-3xl mx-auto">Here are four unique color stories generated for your brand. Click a palette to see it come to life and choose the one that best represents you.</p>
     </div>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {palettes.map((palette) => (
-        <Card key={palette.paletteName} className="cursor-pointer hover:shadow-2xl hover:border-primary transition-all duration-300" onClick={() => onSelect(palette)}>
-          <CardHeader>
-            <CardTitle>{palette.paletteName}</CardTitle>
-            <CardDescription>{palette.description}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-2">
+        <Card key={palette.paletteName} className="cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden" onClick={() => onSelect(palette)}>
+          <CardContent className="p-0">
+             <div className="flex h-32">
               {palette.colors.map(color => (
-                <div key={color} className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-md border" style={{ backgroundColor: color }} />
-                  <span className="font-mono text-sm">{color}</span>
-                </div>
+                <div key={color} className="flex-1 h-full transition-transform duration-300 group-hover:scale-110" style={{ backgroundColor: color }} />
               ))}
+            </div>
+            <div className="p-6">
+              <h3 className="font-headline text-2xl mb-2">{palette.paletteName}</h3>
+              <p className="text-muted-foreground font-body">{palette.description}</p>
             </div>
           </CardContent>
         </Card>
@@ -99,6 +96,7 @@ const PaletteSelection = ({ palettes, onSelect }: { palettes: Palette[], onSelec
     </div>
   </div>
 );
+
 
 const ThemeConfigForm = ({ palette, onSubmit, isLoading }: { palette: Palette, onSubmit: (data: ThemeConfigFormValues) => void, isLoading: boolean }) => {
   const form = useForm<ThemeConfigFormValues>({
