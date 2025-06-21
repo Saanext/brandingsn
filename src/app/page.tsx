@@ -21,7 +21,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Terminal, Wand2, Palette, Paintbrush, Loader2, ArrowRight } from 'lucide-react';
+import { Terminal, Wand2, Palette, Paintbrush, Loader2, ArrowRight, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 
@@ -78,7 +78,7 @@ function hexToHsl(H: string): string {
 }
 
 
-const PaletteSelection = ({ palettes, onSelect }: { palettes: Palette[], onSelect: (palette: Palette) => void }) => (
+const PaletteSelection = ({ palettes, onSelect, onBack }: { palettes: Palette[], onSelect: (palette: Palette) => void, onBack: () => void }) => (
   <div className="w-full max-w-7xl animate-in fade-in duration-500">
     <div className="text-center mb-12">
       <h2 className="font-headline text-4xl md:text-5xl">Visualize Your Brand's Colors</h2>
@@ -101,11 +101,16 @@ const PaletteSelection = ({ palettes, onSelect }: { palettes: Palette[], onSelec
         </Card>
       ))}
     </div>
+     <div className="text-center mt-12">
+       <Button variant="outline" onClick={onBack}>
+         <ArrowLeft className="mr-2 h-4 w-4" /> Back to Brand Details
+      </Button>
+    </div>
   </div>
 );
 
 
-const ThemeConfigForm = ({ palette, onSubmit, isLoading }: { palette: Palette, onSubmit: (data: ThemeConfigFormValues) => void, isLoading: boolean }) => {
+const ThemeConfigForm = ({ palette, onSubmit, isLoading, onBack }: { palette: Palette, onSubmit: (data: ThemeConfigFormValues) => void, isLoading: boolean, onBack: () => void }) => {
   const form = useForm<ThemeConfigFormValues>({
     resolver: zodResolver(themeConfigSchema),
     defaultValues: {
@@ -234,18 +239,23 @@ const ThemeConfigForm = ({ palette, onSubmit, isLoading }: { palette: Palette, o
                     <FontSelectField name="bodyFont" label="Body Font" />
                   </div>
                 </div>
-                <Button type="submit" disabled={isLoading} className="w-full text-lg py-6 font-headline bg-accent hover:bg-accent/90 text-accent-foreground">
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Conjuring Assets...
-                    </>
-                  ) : (
-                    <>
-                      Generate Final Assets <ArrowRight className="ml-2" />
-                    </>
-                  )}
-                </Button>
+                <div className="flex justify-between items-center pt-4">
+                   <Button type="button" variant="outline" onClick={onBack} disabled={isLoading}>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Back to Palettes
+                  </Button>
+                  <Button type="submit" disabled={isLoading} className="text-lg py-6 font-headline bg-accent hover:bg-accent/90 text-accent-foreground">
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Conjuring Assets...
+                      </>
+                    ) : (
+                      <>
+                        Generate Final Assets <ArrowRight className="ml-2" />
+                      </>
+                    )}
+                  </Button>
+                </div>
               </form>
             </Form>
           </CardContent>
@@ -317,7 +327,8 @@ export default function Home() {
 
       const [logoResult, themeResult] = await Promise.all([
         visualizeLogo({
-          ...brandInfo,
+          brandName: brandInfo.brandName,
+          industry: brandInfo.industry,
           colorPalette: selectedPalette.colors,
         }),
         previewWebsiteTheme({
@@ -394,8 +405,8 @@ export default function Home() {
           <div className="container px-4 md:px-6 flex flex-col items-center">
             
             {step === 1 && <BrandForm onSubmit={handleGeneratePalettes} isLoading={isLoading} />}
-            {step === 2 && palettes && <PaletteSelection palettes={palettes} onSelect={handleSelectPalette} />}
-            {step === 3 && selectedPalette && <ThemeConfigForm palette={selectedPalette} onSubmit={handleGenerateAssets} isLoading={isLoading} />}
+            {step === 2 && palettes && <PaletteSelection palettes={palettes} onSelect={handleSelectPalette} onBack={() => setStep(1)} />}
+            {step === 3 && selectedPalette && <ThemeConfigForm palette={selectedPalette} onSubmit={handleGenerateAssets} isLoading={isLoading} onBack={() => setStep(2)} />}
             
             {isLoading && <LoadingState />}
             
@@ -438,8 +449,11 @@ export default function Home() {
                       />
                   </div>
                 </div>
-                 <div className="text-center mt-12">
-                   <Button onClick={() => {
+                 <div className="text-center mt-12 flex justify-center gap-4">
+                    <Button variant="outline" onClick={() => setStep(3)}>
+                      <ArrowLeft className="mr-2 h-4 w-4" /> Back to Config
+                    </Button>
+                    <Button onClick={() => {
                      setStep(1);
                      setBrandKit(null);
                      setPalettes(null);

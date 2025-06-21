@@ -11,14 +11,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
-import { Factory, Palette, Smile, Loader2, ArrowRight, ArrowLeft, Lightbulb } from 'lucide-react';
+import { Factory, Palette, Smile, Loader2, ArrowRight, ArrowLeft } from 'lucide-react';
 
 const formSchema = z.object({
   brandName: z.string().min(2, { message: 'Brand name must be at least 2 characters.' }),
   industry: z.string().min(3, { message: 'Industry is required.' }),
   stylePreferences: z.string().min(3, { message: 'Style preferences are required.' }),
   desiredMood: z.string().min(3, { message: 'Desired mood is required.' }),
-  logoDescription: z.string().optional(),
 });
 
 export type BrandFormValues = z.infer<typeof formSchema>;
@@ -31,18 +30,18 @@ interface BrandFormProps {
 const quizSteps = [
   {
     field: "brandName",
-    title: "Question 1/4: What's your brand's name?",
+    title: "Question 1/3: What's your brand's name?",
     description: "This will be the centerpiece of your new brand identity.",
   },
   {
     field: "industry",
-    title: "Question 2/4: What industry is your brand in?",
+    title: "Question 2/3: What industry is your brand in?",
     description: "This helps us understand your brand's context.",
     options: ["Technology", "Fashion", "Food & Beverage", "Wellness", "E-commerce", "Education"],
   },
   {
     field: "styleAndMood",
-    title: "Question 3/4: What's the personality of your brand?",
+    title: "Question 3/3: What's the personality of your brand?",
     description: "This sets the emotional and visual tone for your brand.",
     options: [
       "Modern & Innovative",
@@ -55,11 +54,6 @@ const quizSteps = [
       "Sophisticated & Minimalist",
     ],
   },
-  {
-    field: "logoDescription",
-    title: "Question 4/4: Any ideas for the logo? (Optional)",
-    description: "Describe any concepts, styles, or elements you'd like to see. e.g., 'a minimalist line art lion'",
-  },
 ];
 
 
@@ -69,7 +63,6 @@ const quizFormSchema = z.object({
   customIndustry: z.string().optional(),
   styleAndMood: z.string({ required_error: "Please select an option." }),
   customStyleAndMood: z.string().optional(),
-  logoDescription: z.string().optional(),
 }).partial(); 
 
 export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
@@ -79,7 +72,6 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
     resolver: zodResolver(quizFormSchema),
     defaultValues: {
       brandName: '',
-      logoDescription: '',
     },
   });
 
@@ -124,7 +116,6 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
       industry: industry.trim(),
       stylePreferences: style.trim(),
       desiredMood: mood ? mood.trim() : 'Professional',
-      logoDescription: data.logoDescription,
     });
   };
 
@@ -251,21 +242,6 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
                       </FormItem>
                     )}
                   />
-              )}
-              {currentStep === 3 && (
-                 <FormField
-                  control={form.control}
-                  name="logoDescription"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2"><Lightbulb className="h-4 w-4 text-muted-foreground" /> Logo Concept</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="e.g., A minimalist line art logo, an abstract geometric shape..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               )}
             </div>
 
