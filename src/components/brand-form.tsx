@@ -31,36 +31,36 @@ const quizSteps = [
   {
     field: "brandName",
     icon: Palette,
-    title: "Question 1/5: What's your brand's name?",
-    description: "This will be the centerpiece of your new brand identity.",
+    title: "Step 1: Brand Name",
+    description: "What's your brand's name? This will be the centerpiece of your new brand identity.",
     placeholder: "e.g., Nova Robotics"
   },
   {
     field: "industry",
     icon: Factory,
-    title: "Question 2/5: What industry is your brand in?",
-    description: "This helps us understand your brand's context. (e.g., Tech, Fashion, Food)",
-    placeholder: "e.g., Sustainable consumer electronics"
+    title: "Step 2: Industry",
+    description: "What industry is your brand in? This helps us understand your brand's context.",
+    placeholder: "e.g., Sustainable consumer electronics, High-fashion apparel, Artisan coffee"
   },
   {
     field: "keywords",
     icon: Sparkles,
-    title: "Question 3/5: What keywords define your brand's style?",
-    description: "Think about personality. List 3-5 keywords.",
-    placeholder: "e.g., Minimal, Modern, Playful, Luxurious"
+    title: "Step 3: Style & Personality",
+    description: "List 3-5 keywords that describe your brand's desired feel.",
+    placeholder: "e.g., Minimal, Modern, Playful, Luxurious, Rustic"
   },
   {
     field: "targetAudience",
     icon: Users,
-    title: "Question 4/5: Who is your target audience?",
-    description: "A brief description helps tailor the visual identity.",
+    title: "Step 4: Target Audience",
+    description: "Who are you trying to reach? A brief description helps tailor the visuals.",
     placeholder: "e.g., Young professionals, families, eco-conscious shoppers"
   },
   {
     field: "coreMessage",
     icon: Heart,
-    title: "Question 5/5: What's your brand's core message or value?",
-    description: "What is the main idea or feeling you want to convey?",
+    title: "Step 5: Core Message",
+    description: "What's the main idea or value you want to convey to your audience?",
     placeholder: "e.g., Connecting people, simplifying life, promoting sustainability"
   },
 ];
@@ -101,7 +101,7 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
   const Icon = currentQuestion.icon;
 
   return (
-    <Card className="w-full max-w-2xl shadow-xl animate-in fade-in duration-500">
+    <Card className="w-full max-w-2xl animate-in fade-in duration-500 border-2">
       <CardHeader>
         <Progress value={((currentStep + 1) / quizSteps.length) * 100} className="mb-4" />
         <CardTitle className="font-headline text-3xl">{currentQuestion.title}</CardTitle>
@@ -110,7 +110,7 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleFinalSubmit)} className="space-y-8">
-            <div className="min-h-[150px]">
+            <div>
               <FormField
                 control={form.control}
                 name={currentQuestion.field as keyof BrandFormValues}
