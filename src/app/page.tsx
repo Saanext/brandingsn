@@ -414,7 +414,7 @@ export default function Home() {
                 </h1>
               </div>
               <p className="mx-auto max-w-[700px] text-muted-foreground text-base md:text-xl font-body">
-                Our AI-powered assistant will guide you through a quick quiz to generate a complete, ready-to-use brand kit, including a color palette, logo, and mockups.
+                Struggling with a name? Our AI can generate creative and relevant brand name ideas. Our assistant will then guide you through a quick quiz to generate a complete brand kit.
               </p>
             </div>
 

@@ -10,8 +10,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from "@/components/ui/progress";
-import { Factory, Palette, Users, Heart, Sparkles, Loader2, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Factory, Palette, Users, Heart, Sparkles, Loader2, ArrowRight, ArrowLeft, Wand2, Tag } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { generateBrandNames } from '@/ai/flows/generate-brand-names';
 
 const quizFormSchema = z.object({
   brandName: z.string().min(2, { message: 'Brand name must be at least 2 characters.' }),
@@ -45,44 +46,46 @@ const personalityOptions = [
 
 const quizSteps = [
   {
-    field: "brandName",
-    icon: Palette,
-    title: "Step 1: What's your brand's name?",
-    description: "This will be the centerpiece of your new brand identity.",
-    placeholder: "e.g., Nova Robotics"
-  },
-  {
     field: "industry",
     icon: Factory,
-    title: "Step 2: What industry are you in?",
+    title: "Step 1: What industry are you in?",
     description: "This helps us understand your brand's context and competition.",
     placeholder: "e.g., Sustainable consumer electronics, High-fashion apparel, Artisan coffee"
   },
   {
     field: "keywords",
     icon: Sparkles,
-    title: "Step 3: What's your brand's personality?",
+    title: "Step 2: What's your brand's personality?",
     description: "Choose the adjective that best describes your brand's desired feel.",
     placeholder: "Select a personality type"
   },
   {
     field: "targetAudience",
     icon: Users,
-    title: "Step 4: Who is your ideal customer?",
+    title: "Step 3: Who is your ideal customer?",
     description: "A brief description helps tailor the visuals to the right people.",
     placeholder: "e.g., Young professionals, families, eco-conscious shoppers"
   },
   {
     field: "coreMessage",
     icon: Heart,
-    title: "Step 5: What are your brand's core values?",
+    title: "Step 4: What are your brand's core values?",
     description: "What is the main idea or mission you want to convey to your audience?",
     placeholder: "e.g., Connecting people, simplifying life, promoting sustainability"
+  },
+    {
+    field: "brandName",
+    icon: Palette,
+    title: "Step 5: What's your brand's name?",
+    description: "This will be the centerpiece of your new brand identity. Struggling? We can help suggest some names!",
+    placeholder: "e.g., Nova Robotics"
   },
 ];
 
 export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
   const [currentStep, setCurrentStep] = useState(0);
+  const [nameSuggestions, setNameSuggestions] = useState<string[]>([]);
+  const [isSuggesting, setIsSuggesting] = useState(false);
 
   const form = useForm<BrandFormValues>({
     resolver: zodResolver(quizFormSchema),
@@ -111,6 +114,27 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
   
   const handleFinalSubmit = (data: BrandFormValues) => {
     onSubmit(data);
+  };
+
+  const handleSuggestNames = async () => {
+    const values = form.getValues();
+    const { industry, keywords, targetAudience, coreMessage } = values;
+
+    setIsSuggesting(true);
+    setNameSuggestions([]);
+    try {
+        const result = await generateBrandNames({
+            industry,
+            keywords,
+            targetAudience,
+            coreMessage
+        });
+        setNameSuggestions(result.names);
+    } catch (error) {
+        console.error("Failed to suggest names:", error);
+    } finally {
+        setIsSuggesting(false);
+    }
   };
 
   const currentQuestion = quizSteps[currentStep];
@@ -158,6 +182,42 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
                         <Textarea placeholder={currentQuestion.placeholder} {...field} className="min-h-[100px]" />
                       )}
                     </FormControl>
+                    {currentQuestion.field === 'brandName' && (
+                      <div className="space-y-4 pt-4">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={handleSuggestNames}
+                          disabled={isSuggesting}
+                          className="w-full sm:w-auto"
+                        >
+                          {isSuggesting ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          ) : (
+                            <Wand2 className="mr-2 h-4 w-4" />
+                          )}
+                          Suggest Names
+                        </Button>
+                        {nameSuggestions.length > 0 && (
+                          <div className="space-y-2">
+                            <p className="text-sm font-medium text-muted-foreground">Here are a few suggestions:</p>
+                            <div className="flex flex-wrap gap-2">
+                              {nameSuggestions.map((name) => (
+                                <Button
+                                  key={name}
+                                  type="button"
+                                  variant="secondary"
+                                  size="sm"
+                                  onClick={() => form.setValue('brandName', name, { shouldValidate: true })}
+                                >
+                                  {name}
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
