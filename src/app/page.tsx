@@ -81,8 +81,8 @@ function hexToHsl(H: string): string {
 const PaletteSelection = ({ palettes, onSelect, onBack }: { palettes: Palette[], onSelect: (palette: Palette) => void, onBack: () => void }) => (
   <div className="w-full max-w-7xl animate-in fade-in duration-500">
     <div className="text-center mb-12">
-      <h2 className="font-headline text-4xl md:text-5xl">Visualize Your Brand's Colors</h2>
-      <p className="text-muted-foreground font-body text-lg max-w-3xl mx-auto">Here are four unique color stories for your brand. Select a palette to see it in action.</p>
+      <h2 className="font-headline text-4xl md:text-5xl">Choose Your Color Story</h2>
+      <p className="text-muted-foreground font-body text-lg max-w-3xl mx-auto">We've generated four unique color palettes based on your brand profile. Select one to move on to the next step.</p>
     </div>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {palettes.map((palette) => (
@@ -396,7 +396,7 @@ export default function Home() {
                 </h1>
               </div>
               <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl font-body">
-                Generate a complete brand identity in seconds. Tell us about your brand to begin.
+                Our AI-powered assistant will guide you through a quick quiz to generate a complete, ready-to-use brand kit, including a color palette, logo, and mockups.
               </p>
             </div>
           </div>
@@ -423,14 +423,14 @@ export default function Home() {
               <div className="mt-12 w-full max-w-7xl animate-in fade-in duration-500">
                 <div className="text-center mb-12">
                    <h2 className="font-headline text-4xl md:text-5xl">Your Brand Kit is Ready!</h2>
-                   <p className="text-muted-foreground font-body text-lg">Here are the assets we've generated for you.</p>
+                   <p className="text-muted-foreground font-body text-lg max-w-3xl mx-auto">Congratulations! Here is your complete brand kit. You can download each asset individually and start using them right away.</p>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                   <div className="lg:col-span-1 flex flex-col gap-8">
                      <ColorPaletteDisplay {...brandKit.palette} />
                      <AssetPreview
                         title="Social Media Mockup"
-                        description="An example of your branding on social media."
+                        description="An example post to show how your brand looks on social media. Download it for inspiration."
                         src={brandKit.social.mockupDataUri}
                         fileName="social-media-mockup.png"
                       />
@@ -438,13 +438,13 @@ export default function Home() {
                   <div className="lg:col-span-1 flex flex-col gap-8">
                       <AssetPreview
                         title="Logo Visualization"
-                        description="A sample logo concept with your brand colors."
+                        description="A unique logo concept generated for your brand. Download and use it as your official logo."
                         src={brandKit.logo.logoDataUri}
                         fileName="logo.png"
                       />
                       <AssetPreview
                         title="Business Card Mockup"
-                        description="A professional business card design."
+                        description="A professional business card design, ready for print. Download the design to send to a printer."
                         src={brandKit.businessCard.mockupDataUri}
                         fileName="business-card-mockup.png"
                       />
