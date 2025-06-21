@@ -11,11 +11,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from "@/components/ui/progress";
 import { Factory, Palette, Users, Heart, Sparkles, Loader2, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const quizFormSchema = z.object({
   brandName: z.string().min(2, { message: 'Brand name must be at least 2 characters.' }),
   industry: z.string().min(3, { message: 'Please describe your industry.' }),
-  keywords: z.string().min(3, { message: 'Please provide at least one keyword.' }),
+  keywords: z.string().min(1, { message: 'Please select a personality.' }),
   targetAudience: z.string().min(3, { message: 'Please describe your target audience.' }),
   coreMessage: z.string().min(3, { message: 'Please describe your core message.' }),
 });
@@ -26,6 +27,21 @@ interface BrandFormProps {
   onSubmit: (data: BrandFormValues) => void;
   isLoading: boolean;
 }
+
+const personalityOptions = [
+  'Modern',
+  'Classic',
+  'Playful',
+  'Serious',
+  'Luxurious',
+  'Accessible',
+  'Bold',
+  'Minimalist',
+  'Feminine',
+  'Masculine',
+  'Natural',
+  'Techy',
+];
 
 const quizSteps = [
   {
@@ -45,9 +61,9 @@ const quizSteps = [
   {
     field: "keywords",
     icon: Sparkles,
-    title: "Step 3: Describe your brand's personality.",
-    description: "If your brand was a person, what would they be like? Think in terms of adjectives.",
-    placeholder: "e.g., Innovative, Daring, Warm, Traditional, Playful"
+    title: "Step 3: What's your brand's personality?",
+    description: "Choose the adjective that best describes your brand's desired feel.",
+    placeholder: "Select a personality type"
   },
   {
     field: "targetAudience",
@@ -123,6 +139,21 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
                     <FormControl>
                       {currentQuestion.field === 'brandName' ? (
                         <Input placeholder={currentQuestion.placeholder} {...field} />
+                      ) : currentQuestion.field === 'keywords' ? (
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder={currentQuestion.placeholder} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {personalityOptions.map(option => (
+                              <SelectItem key={option} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       ) : (
                         <Textarea placeholder={currentQuestion.placeholder} {...field} className="min-h-[100px]" />
                       )}
