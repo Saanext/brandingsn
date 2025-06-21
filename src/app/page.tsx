@@ -403,9 +403,19 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
+       <header className="sticky top-0 z-40 w-full border-b bg-background">
+        <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
+          <div className="flex gap-6 md:gap-10">
+            <a href="#" className="flex items-center space-x-2">
+              <BrandIcon className="h-6 w-6" />
+              <span className="inline-block font-bold">Brand Genie</span>
+            </a>
+          </div>
+        </div>
+      </header>
       <main className="flex-1">
-        <div className="w-full py-12 md:py-24 lg:py-32">
-          <div className="container mx-auto px-4 md:px-6">
+        <section className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center space-y-6 text-center">
               <div className="flex items-center gap-2 md:gap-4">
                 <BrandIcon className="h-12 w-12 md:h-16 md:w-16 text-primary" />
@@ -482,10 +492,16 @@ export default function Home() {
               )}
             </div>
           </div>
-        </div>
+        </section>
       </main>
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} Brand Genie. All rights reserved.</p>
+      <footer className="border-t">
+        <div className="container mx-auto flex h-16 items-center px-4 md:px-6">
+          <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} Brand Genie. All rights reserved.</p>
+          <nav className="ml-auto flex gap-4 sm:gap-6">
+             <a href="#" className="text-xs hover:underline underline-offset-4">Terms of Service</a>
+             <a href="#" className="text-xs hover:underline underline-offset-4">Privacy</a>
+          </nav>
+        </div>
       </footer>
     </div>
   );
