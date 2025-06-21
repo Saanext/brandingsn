@@ -21,7 +21,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { Terminal, Wand2, Palette, Paintbrush, Loader2, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -48,7 +47,6 @@ const themeConfigSchema = z.object({
   backgroundColor: z.string(),
   headlineFont: z.string(),
   bodyFont: z.string(),
-  logoDescription: z.string().optional(),
 });
 type ThemeConfigFormValues = z.infer<typeof themeConfigSchema>;
 
@@ -116,7 +114,6 @@ const ThemeConfigForm = ({ palette, onSubmit, isLoading }: { palette: Palette, o
       backgroundColor: palette.colors[4],
       headlineFont: 'inter',
       bodyFont: 'inter',
-      logoDescription: '',
     },
   });
   
@@ -210,7 +207,7 @@ const ThemeConfigForm = ({ palette, onSubmit, isLoading }: { palette: Palette, o
     <div className="w-full max-w-7xl mt-12 animate-in fade-in duration-500">
        <div className="text-center mb-12">
         <h2 className="font-headline text-4xl md:text-5xl">Fine-tune Your Assets</h2>
-        <p className="text-muted-foreground font-body text-lg">Assign color roles, select fonts, and describe your ideal logo.</p>
+        <p className="text-muted-foreground font-body text-lg">Assign color roles and select fonts for your brand assets.</p>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         <ColorPaletteDisplay {...palette} />
@@ -237,19 +234,6 @@ const ThemeConfigForm = ({ palette, onSubmit, isLoading }: { palette: Palette, o
                     <FontSelectField name="bodyFont" label="Body Font" />
                   </div>
                 </div>
-                <FormField
-                  control={form.control}
-                  name="logoDescription"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Logo Description (Optional)</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="e.g., A minimalist line art logo, an abstract geometric shape..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
                 <Button type="submit" disabled={isLoading} className="w-full text-lg py-6 font-headline bg-accent hover:bg-accent/90 text-accent-foreground">
                   {isLoading ? (
                     <>
@@ -335,7 +319,6 @@ export default function Home() {
         visualizeLogo({
           ...brandInfo,
           colorPalette: selectedPalette.colors,
-          logoDescription: config.logoDescription,
         }),
         previewWebsiteTheme({
           brandName: brandInfo.brandName,

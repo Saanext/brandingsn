@@ -11,14 +11,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
-import { Factory, Palette, Smile, Loader2, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Factory, Palette, Smile, Loader2, ArrowRight, ArrowLeft, Lightbulb } from 'lucide-react';
 
-// This is the output type, which remains consistent for the parent component.
 const formSchema = z.object({
   brandName: z.string().min(2, { message: 'Brand name must be at least 2 characters.' }),
   industry: z.string().min(3, { message: 'Industry is required.' }),
   stylePreferences: z.string().min(3, { message: 'Style preferences are required.' }),
   desiredMood: z.string().min(3, { message: 'Desired mood is required.' }),
+  logoDescription: z.string().optional(),
 });
 
 export type BrandFormValues = z.infer<typeof formSchema>;
@@ -31,41 +31,46 @@ interface BrandFormProps {
 const quizSteps = [
   {
     field: "brandName",
-    title: "Question 1/3: What's your brand's name?",
+    title: "Question 1/4: What's your brand's name?",
     description: "This will be the centerpiece of your new brand identity.",
   },
   {
-    field: "industryAndStyle",
-    title: "Question 2/3: Describe your industry & style",
-    description: "This helps us understand the context and visual language of your brand.",
+    field: "industry",
+    title: "Question 2/4: What industry is your brand in?",
+    description: "This helps us understand your brand's context.",
+    options: ["Technology", "Fashion", "Food & Beverage", "Wellness", "E-commerce", "Education"],
+  },
+  {
+    field: "styleAndMood",
+    title: "Question 3/4: What's the personality of your brand?",
+    description: "This sets the emotional and visual tone for your brand.",
     options: [
-      "Technology - Modern and Innovative",
-      "Fashion - Elegant and Luxurious",
-      "Food & Beverage - Fun and Playful",
-      "Wellness - Calm and Natural",
+      "Modern & Innovative",
+      "Elegant & Luxurious",
+      "Fun & Playful",
+      "Calm & Natural",
+      "Energetic & Exciting",
+      "Trustworthy & Professional",
+      "Friendly & Approachable",
+      "Sophisticated & Minimalist",
     ],
   },
   {
-    field: "desiredMood",
-    title: "Question 3/3: What mood should your brand evoke?",
-    description: "The mood sets the emotional tone for your brand's colors and design.",
-    options: [
-      "Energetic and Exciting",
-      "Trustworthy and Professional",
-      "Friendly and Approachable",
-      "Sophisticated and Minimalist",
-    ],
+    field: "logoDescription",
+    title: "Question 4/4: Any ideas for the logo? (Optional)",
+    description: "Describe any concepts, styles, or elements you'd like to see. e.g., 'a minimalist line art lion'",
   },
 ];
 
-// Internal schema for the multi-step quiz form
+
 const quizFormSchema = z.object({
   brandName: z.string().min(2, { message: "Please enter a brand name of at least 2 characters." }),
-  industryAndStyle: z.string({ required_error: "Please select an option." }),
-  customIndustryAndStyle: z.string().optional(),
-  desiredMood: z.string({ required_error: "Please select an option." }),
-  customDesiredMood: z.string().optional(),
-}).partial(); // Make all fields optional initially
+  industry: z.string({ required_error: "Please select an industry." }),
+  customIndustry: z.string().optional(),
+  styleAndMood: z.string({ required_error: "Please select an option." }),
+  customStyleAndMood: z.string().optional(),
+  logoDescription: z.string().optional(),
+}).partial(); 
 
 export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
   const [currentStep, setCurrentStep] = useState(0);
@@ -74,13 +79,28 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
     resolver: zodResolver(quizFormSchema),
     defaultValues: {
       brandName: '',
+      logoDescription: '',
     },
   });
 
   const handleNext = async () => {
-    const fields: (keyof z.infer<typeof quizFormSchema>)[] = currentStep === 0 ? ['brandName'] : ['industryAndStyle'];
-    const isValid = await form.trigger(fields);
-    
+    let fieldsToValidate: (keyof z.infer<typeof quizFormSchema>)[];
+    switch (currentStep) {
+      case 0:
+        fieldsToValidate = ['brandName'];
+        break;
+      case 1:
+        fieldsToValidate = ['industry'];
+        break;
+      case 2:
+        fieldsToValidate = ['styleAndMood'];
+        break;
+      default:
+        fieldsToValidate = [];
+        break;
+    }
+    const isValid = await form.trigger(fieldsToValidate);
+
     if (isValid) {
       setCurrentStep((prev) => prev + 1);
     }
@@ -91,19 +111,20 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
   };
   
   const handleFinalSubmit = (data: z.infer<typeof quizFormSchema>) => {
-    const [industry, stylePreferences] = (data.industryAndStyle === 'other' 
-        ? data.customIndustryAndStyle || 'General - Creative' 
-        : data.industryAndStyle || 'General - Creative').split(' - ');
+    const industry = data.industry === 'other' 
+        ? data.customIndustry || 'General' 
+        : data.industry || 'General';
     
-    const desiredMood = data.desiredMood === 'other'
-        ? data.customDesiredMood || "Professional"
-        : data.desiredMood || "Professional";
+    const [style, mood] = (data.styleAndMood === 'other' 
+        ? data.customStyleAndMood || 'Creative & Professional' 
+        : data.styleAndMood || 'Creative & Professional').split(' & ');
         
     onSubmit({
       brandName: data.brandName || "My Awesome Brand",
       industry: industry.trim(),
-      stylePreferences: stylePreferences ? stylePreferences.trim() : 'Creative',
-      desiredMood: desiredMood.trim(),
+      stylePreferences: style.trim(),
+      desiredMood: mood ? mood.trim() : 'Professional',
+      logoDescription: data.logoDescription,
     });
   };
 
@@ -138,15 +159,15 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
               {currentStep === 1 && (
                  <FormField
                     control={form.control}
-                    name="industryAndStyle"
+                    name="industry"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <FormLabel className="flex items-center gap-2"><Factory className="h-4 w-4 text-muted-foreground" /> Industry & Style</FormLabel>
+                        <FormLabel className="flex items-center gap-2"><Factory className="h-4 w-4 text-muted-foreground" /> Industry</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
                             value={field.value}
-                            className="flex flex-col space-y-1"
+                            className="grid grid-cols-2 gap-4"
                           >
                             {quizSteps[1].options?.map(option => (
                               <FormItem key={option} className="flex items-center space-x-3 space-y-0">
@@ -165,14 +186,14 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
                           </RadioGroup>
                         </FormControl>
                         <FormMessage />
-                        {form.watch('industryAndStyle') === 'other' && (
+                        {form.watch('industry') === 'other' && (
                            <FormField
                               control={form.control}
-                              name="customIndustryAndStyle"
+                              name="customIndustry"
                               render={({ field }) => (
                                 <FormItem>
                                   <FormControl>
-                                    <Textarea placeholder="Describe your industry and style (e.g. Healthcare - Trustworthy)" {...field} />
+                                    <Input placeholder="Your industry..." {...field} />
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>
@@ -186,15 +207,15 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
               {currentStep === 2 && (
                 <FormField
                     control={form.control}
-                    name="desiredMood"
+                    name="styleAndMood"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <FormLabel className="flex items-center gap-2"><Smile className="h-4 w-4 text-muted-foreground" /> Desired Mood</FormLabel>
+                        <FormLabel className="flex items-center gap-2"><Smile className="h-4 w-4 text-muted-foreground" /> Style & Mood</FormLabel>
                          <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
                             value={field.value}
-                            className="flex flex-col space-y-1"
+                            className="grid grid-cols-2 gap-4"
                           >
                             {quizSteps[2].options?.map(option => (
                               <FormItem key={option} className="flex items-center space-x-3 space-y-0">
@@ -213,14 +234,14 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
                           </RadioGroup>
                         </FormControl>
                         <FormMessage />
-                        {form.watch('desiredMood') === 'other' && (
+                        {form.watch('styleAndMood') === 'other' && (
                            <FormField
                               control={form.control}
-                              name="customDesiredMood"
+                              name="customStyleAndMood"
                               render={({ field }) => (
                                 <FormItem>
                                   <FormControl>
-                                    <Textarea placeholder="e.g., Calm and trustworthy" {...field} />
+                                    <Input placeholder="e.g., Corporate & Trustworthy" {...field} />
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>
@@ -231,9 +252,24 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
                     )}
                   />
               )}
+              {currentStep === 3 && (
+                 <FormField
+                  control={form.control}
+                  name="logoDescription"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2"><Lightbulb className="h-4 w-4 text-muted-foreground" /> Logo Concept</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="e.g., A minimalist line art logo, an abstract geometric shape..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
 
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center pt-8">
               <Button type="button" variant="outline" onClick={handleBack} disabled={currentStep === 0 || isLoading}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back
               </Button>
