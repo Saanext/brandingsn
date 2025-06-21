@@ -1,5 +1,3 @@
-// This file is machine-generated - edit at your own risk!
-
 'use server';
 
 /**
@@ -21,12 +19,20 @@ const GenerateColorPaletteInputSchema = z.object({
 });
 export type GenerateColorPaletteInput = z.infer<typeof GenerateColorPaletteInputSchema>;
 
-const GenerateColorPaletteOutputSchema = z.object({
+const PaletteSchema = z.object({
   paletteName: z.string().describe('The name of the color palette.'),
   description: z.string().describe('A description of the color palette.'),
   colors: z
-    .array(z.string())
-    .describe('An array of hex color codes that represent the color palette.'),
+    .array(z.string().regex(/^#[0-9a-fA-F]{6}$/))
+    .length(5)
+    .describe('An array of 5 hex color codes that represent the color palette.'),
+});
+
+const GenerateColorPaletteOutputSchema = z.object({
+  palettes: z
+    .array(PaletteSchema)
+    .length(4)
+    .describe('An array of 4 distinct color palettes.'),
 });
 export type GenerateColorPaletteOutput = z.infer<typeof GenerateColorPaletteOutputSchema>;
 
@@ -40,19 +46,38 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateColorPaletteOutputSchema},
   prompt: `You are an expert branding consultant who specializes in color palette generation.
 
-  Based on the brand information, generate a color palette with 5 colors that reflects the brand identity.
-  Return the palette name, a description of the color palette and an array of hex color codes.
+  Based on the brand information, generate 4 distinct color palettes. Each palette must have exactly 5 colors.
+  For each palette, provide a unique palette name, a short description, and an array of 5 hex color codes.
 
   Brand Name: {{{brandName}}}
   Industry: {{{industry}}}
   Style Preferences: {{{stylePreferences}}}
   Desired Mood: {{{desiredMood}}}
 
-  Return the color palette in the following JSON format:
+  Return the color palettes in the following JSON format:
   {
-    "paletteName": "Palette Name",
-    "description": "Description of the color palette",
-    "colors": ["#RRGGBB", "#RRGGBB", "#RRGGBB", "#RRGGBB", "#RRGGBB"]
+    "palettes": [
+      {
+        "paletteName": "Palette Name 1",
+        "description": "Description of the first color palette",
+        "colors": ["#RRGGBB", "#RRGGBB", "#RRGGBB", "#RRGGBB", "#RRGGBB"]
+      },
+      {
+        "paletteName": "Palette Name 2",
+        "description": "Description of the second color palette",
+        "colors": ["#RRGGBB", "#RRGGBB", "#RRGGBB", "#RRGGBB", "#RRGGBB"]
+      },
+      {
+        "paletteName": "Palette Name 3",
+        "description": "Description of the third color palette",
+        "colors": ["#RRGGBB", "#RRGGBB", "#RRGGBB", "#RRGGBB", "#RRGGBB"]
+      },
+      {
+        "paletteName": "Palette Name 4",
+        "description": "Description of the fourth color palette",
+        "colors": ["#RRGGBB", "#RRGGBB", "#RRGGBB", "#RRGGBB", "#RRGGBB"]
+      }
+    ]
   }
 `,
 });
