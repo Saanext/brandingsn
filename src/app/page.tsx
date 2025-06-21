@@ -10,10 +10,12 @@ import { generateColorPalette, type GenerateColorPaletteOutput, type GenerateCol
 import { visualizeLogo, type VisualizeLogoOutput } from '@/ai/flows/visualize-logo';
 import { createBusinessCardMockup, type CreateBusinessCardMockupOutput } from '@/ai/flows/create-business-card-mockup';
 import { createSocialMediaMockup, type CreateSocialMediaMockupOutput } from '@/ai/flows/create-social-media-mockup';
+import { generateBrandGuidelines, type GenerateBrandGuidelinesOutput } from '@/ai/flows/generate-brand-guidelines';
 
 import { BrandForm, type BrandFormValues } from '@/components/brand-form';
 import { ColorPaletteDisplay } from '@/components/color-palette-display';
 import { AssetPreview } from '@/components/asset-preview';
+import { BrandGuidelinesDisplay } from '@/components/brand-guidelines-display';
 import { BrandIcon } from '@/components/icons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -32,6 +34,7 @@ interface BrandKit {
   logo: VisualizeLogoOutput;
   businessCard: CreateBusinessCardMockupOutput;
   social: CreateSocialMediaMockupOutput;
+  guidelines: GenerateBrandGuidelinesOutput;
 }
 
 const fontOptions = [
@@ -331,7 +334,7 @@ export default function Home() {
         colorPalette: selectedPalette.colors,
       });
 
-      const [socialResult, businessCardResult] = await Promise.all([
+      const [socialResult, businessCardResult, guidelinesResult] = await Promise.all([
         createSocialMediaMockup({
           brandName: brandInfo.brandName,
           logoDataUri: logoResult.logoDataUri,
@@ -347,6 +350,20 @@ export default function Home() {
           headlineFont: headlineFontLabel,
           bodyFont: bodyFontLabel,
         }),
+        generateBrandGuidelines({
+            brandName: brandInfo.brandName,
+            palette: selectedPalette,
+            fonts: {
+                headlineFont: headlineFontLabel,
+                bodyFont: bodyFontLabel,
+            },
+            brandInfo: {
+                industry: brandInfo.industry,
+                keywords: brandInfo.keywords,
+                targetAudience: brandInfo.targetAudience,
+                coreMessage: brandInfo.coreMessage,
+            }
+        })
       ]);
 
       setBrandKit({
@@ -354,6 +371,7 @@ export default function Home() {
         logo: logoResult,
         social: socialResult,
         businessCard: businessCardResult,
+        guidelines: guidelinesResult,
       });
       setStep(4);
 
@@ -423,12 +441,12 @@ export default function Home() {
                   </div>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                     <div className="lg:col-span-1 flex flex-col gap-8">
-                       <ColorPaletteDisplay {...brandKit.palette} />
+                       <BrandGuidelinesDisplay guidelines={brandKit.guidelines} />
                        <AssetPreview
-                          title="Social Media Mockup"
-                          description="An example post to show how your brand looks on social media. Download it for inspiration."
-                          src={brandKit.social.mockupDataUri}
-                          fileName="social-media-mockup.png"
+                          title="Business Card Mockup"
+                          description="A professional business card design, ready for print. Download the design to send to a printer."
+                          src={brandKit.businessCard.mockupDataUri}
+                          fileName="business-card-mockup.png"
                         />
                     </div>
                     <div className="lg:col-span-1 flex flex-col gap-8">
@@ -439,10 +457,10 @@ export default function Home() {
                           fileName="logo.png"
                         />
                         <AssetPreview
-                          title="Business Card Mockup"
-                          description="A professional business card design, ready for print. Download the design to send to a printer."
-                          src={brandKit.businessCard.mockupDataUri}
-                          fileName="business-card-mockup.png"
+                          title="Social Media Mockup"
+                          description="An example post to show how your brand looks on social media. Download it for inspiration."
+                          src={brandKit.social.mockupDataUri}
+                          fileName="social-media-mockup.png"
                         />
                     </div>
                   </div>
