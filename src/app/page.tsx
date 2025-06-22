@@ -118,18 +118,42 @@ const PaletteSelection = ({ palettes, onSelect, onBack }: { palettes: Palette[],
 const ThemeConfigForm = ({ palette, onSubmit, isLoading, onBack }: { palette: Palette, onSubmit: (data: ThemeConfigFormValues) => void, isLoading: boolean, onBack: () => void }) => {
   const form = useForm<ThemeConfigFormValues>({
     resolver: zodResolver(themeConfigSchema),
-    defaultValues: {
+  });
+
+  useEffect(() => {
+    form.reset({
       primaryColor: palette.colors[0],
       accentColor: palette.colors[1],
       backgroundColor: palette.colors[4],
       headlineFont: 'inter',
       bodyFont: 'inter',
-    },
-  });
+    });
+  }, [palette, form]);
   
+  const primaryColor = form.watch('primaryColor');
+  const accentColor = form.watch('accentColor');
+  const backgroundColor = form.watch('backgroundColor');
   const headlineFont = form.watch('headlineFont');
   const bodyFont = form.watch('bodyFont');
 
+  useEffect(() => {
+    if (primaryColor) {
+      document.documentElement.style.setProperty('--primary', hexToHsl(primaryColor));
+    }
+  }, [primaryColor]);
+
+  useEffect(() => {
+    if (accentColor) {
+      document.documentElement.style.setProperty('--accent', hexToHsl(accentColor));
+    }
+  }, [accentColor]);
+
+  useEffect(() => {
+    if (backgroundColor) {
+      document.documentElement.style.setProperty('--background', hexToHsl(backgroundColor));
+    }
+  }, [backgroundColor]);
+  
   useEffect(() => {
     if (headlineFont) {
       document.documentElement.style.setProperty('--font-headline', `var(--font-${headlineFont})`);
@@ -150,7 +174,7 @@ const ThemeConfigForm = ({ palette, onSubmit, isLoading, onBack }: { palette: Pa
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
             <FormControl>
               <SelectTrigger>
                 <div className="flex items-center gap-2">
@@ -183,7 +207,7 @@ const ThemeConfigForm = ({ palette, onSubmit, isLoading, onBack }: { palette: Pa
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
             <FormControl>
               <SelectTrigger className={cn(
                 field.value === 'playfair' && 'font-playfair',
@@ -283,14 +307,6 @@ export default function Home() {
   const [brandKit, setBrandKit] = useState<BrandKit | null>(null);
   const { toast } = useToast();
 
-  const updateTheme = (p: Palette) => {
-    if (typeof window !== 'undefined') {
-      document.documentElement.style.setProperty('--primary', hexToHsl(p.colors[0]));
-      document.documentElement.style.setProperty('--accent', hexToHsl(p.colors[1]));
-      document.documentElement.style.setProperty('--background', hexToHsl(p.colors[4]));
-    }
-  };
-  
   const handleGeneratePalettes = async (data: BrandFormValues) => {
     setIsLoading(true);
     setLoadingMessage('Generating color palettes...');
@@ -314,9 +330,6 @@ export default function Home() {
   
   const handleSelectPalette = (palette: Palette) => {
     setSelectedPalette(palette);
-    updateTheme(palette);
-    document.documentElement.style.setProperty('--font-headline', 'var(--font-inter)');
-    document.documentElement.style.setProperty('--font-body', 'var(--font-inter)');
     setStep(3);
   };
 
