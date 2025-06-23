@@ -95,10 +95,16 @@ const PaletteSelection = ({ palettes, onSelect, onBack }: { palettes: Palette[],
       {palettes.map((palette) => (
         <Card key={palette.paletteName} className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group overflow-hidden bg-card/80 backdrop-blur-sm" onClick={() => onSelect(palette)}>
           <CardContent className="p-0">
-             <div className="flex h-32">
-              {palette.colors.map(color => (
-                <div key={color} className="flex-1 h-full transition-transform duration-300 group-hover:scale-110" style={{ backgroundColor: color }} />
-              ))}
+            <div className="h-40 w-full overflow-hidden">
+              <div className="flex h-full w-full transition-transform duration-300 ease-in-out group-hover:scale-105">
+                <div className="w-3/5" style={{ backgroundColor: palette.colors[0] }} />
+                <div className="w-2/5 grid grid-cols-2 grid-rows-2">
+                  <div style={{ backgroundColor: palette.colors[1] }} />
+                  <div style={{ backgroundColor: palette.colors[2] }} />
+                  <div style={{ backgroundColor: palette.colors[3] }} />
+                  <div style={{ backgroundColor: palette.colors[4] }} />
+                </div>
+              </div>
             </div>
             <div className="p-6">
               <h3 className="font-headline text-2xl mb-2">{palette.paletteName}</h3>
