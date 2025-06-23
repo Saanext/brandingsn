@@ -89,7 +89,7 @@ const PaletteSelection = ({ palettes, onSelect, onBack }: { palettes: Palette[],
   <div className="w-full max-w-7xl animate-in fade-in duration-500">
     <div className="text-center mb-12">
       <h2 className="font-headline text-3xl md:text-5xl">Choose Your Color Story</h2>
-      <p className="text-muted-foreground font-body md:text-lg max-w-3xl mx-auto">We've generated four unique color palettes based on your brand profile. Select one to move on to the next step.</p>
+      <p className="text-muted-foreground font-body md:text-lg max-w-3xl mx-auto">Your brand profile has inspired these unique color palettes. Select one to continue building your brand identity.</p>
     </div>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {palettes.map((palette) => (
@@ -251,7 +251,7 @@ const ThemeConfigForm = ({ palette, onSubmit, isLoading, onBack, onPreview, isPr
     <div className="w-full max-w-7xl mt-12 animate-in fade-in duration-500">
        <div className="text-center mb-12">
         <h2 className="font-headline text-3xl md:text-5xl">Fine-tune Your Assets</h2>
-        <p className="text-muted-foreground font-body md:text-lg">Assign color roles, choose fonts, and preview how they look together.</p>
+        <p className="text-muted-foreground font-body md:text-lg max-w-3xl mx-auto">Assign color roles and choose fonts. Preview your website theme in real-time before generating the final assets.</p>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         <div className="space-y-8">
@@ -293,7 +293,7 @@ const ThemeConfigForm = ({ palette, onSubmit, isLoading, onBack, onPreview, isPr
                     <FontSelectField name="bodyFont" label="Body Font" />
                   </div>
                 </div>
-                <div className="flex justify-between items-center pt-4">
+                <div className="flex justify-between items-center pt-8">
                    <Button type="button" variant="outline" onClick={onBack} disabled={isLoading || isPreviewing}>
                     <ArrowLeft className="mr-2 h-4 w-4" /> Back to Palettes
                   </Button>
@@ -476,6 +476,21 @@ export default function Home() {
     });
   }
 
+  const handleReset = () => {
+    setStep(1);
+    setBrandKit(null);
+    setPalettes(null);
+    setSelectedPalette(null);
+    setBrandInfo(null);
+    setWebsitePreview(null);
+    // Reset styles to default dark theme
+    document.documentElement.style.setProperty('--primary', '0 0% 98%');
+    document.documentElement.style.setProperty('--accent', '0 0% 98%');
+    document.documentElement.style.setProperty('--background', '0 0% 4%');
+    document.documentElement.style.setProperty('--font-headline', 'var(--font-inter)');
+    document.documentElement.style.setProperty('--font-body', 'var(--font-inter)');
+  };
+
   const LoadingState = () => (
     <div className="mt-12 w-full max-w-4xl text-center animate-pulse">
       <h2 className="font-headline text-3xl md:text-5xl">{loadingMessage}</h2>
@@ -503,7 +518,7 @@ export default function Home() {
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="flex items-center gap-2 md:gap-4">
                 <BrandIcon className="h-12 w-12 md:h-16 md:w-16 text-primary" />
-                <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl tracking-tight leading-tight">
+                <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl tracking-tight">
                   Brand Genie
                 </h1>
               </div>
@@ -542,7 +557,7 @@ export default function Home() {
                 <div className="mt-12 w-full max-w-7xl animate-in fade-in duration-500">
                   <div className="text-center mb-12">
                      <h2 className="font-headline text-3xl md:text-5xl">Your Brand Kit is Ready!</h2>
-                     <p className="text-muted-foreground font-body md:text-lg max-w-3xl mx-auto">Congratulations! Here is your complete brand kit. You can download each asset individually and start using them right away.</p>
+                     <p className="text-muted-foreground font-body md:text-lg max-w-3xl mx-auto">Congratulations on your new brand! Your complete brand kit is ready. Download each asset and start building your identity.</p>
                   </div>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                     <div className="lg:col-span-1 flex flex-col gap-8">
@@ -573,16 +588,9 @@ export default function Home() {
                       <Button variant="outline" onClick={() => setStep(3)} className="w-full sm:w-auto">
                         <ArrowLeft className="mr-2 h-4 w-4" /> Back to Config
                       </Button>
-                      <Button className="w-full sm:w-auto" onClick={() => {
-                       setStep(1);
-                       setBrandKit(null);
-                       setPalettes(null);
-                       setSelectedPalette(null);
-                       setBrandInfo(null);
-                       setWebsitePreview(null);
-                       document.documentElement.style.setProperty('--font-headline', 'var(--font-inter)');
-                       document.documentElement.style.setProperty('--font-body', 'var(--font-inter)');
-                     }}>Start Over</Button>
+                      <Button className="w-full sm:w-auto" onClick={handleReset}>
+                        Start Over
+                      </Button>
                   </div>
                 </div>
               )}

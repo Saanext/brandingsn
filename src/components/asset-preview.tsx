@@ -17,18 +17,20 @@ export function AssetPreview({ title, description, src, fileName }: AssetPreview
         <CardTitle className="font-headline text-2xl">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow flex items-center justify-center bg-muted/30 rounded-lg m-2 md:m-6 mt-0 p-2 md:p-4">
-        {src ? (
-          <Image
-            src={src}
-            alt={title}
-            width={400}
-            height={300}
-            className="rounded-md object-contain max-h-[400px]"
-          />
-        ) : (
-          <div className="w-full h-64 bg-gray-200 rounded-md animate-pulse" />
-        )}
+      <CardContent className="flex-grow flex items-center justify-center">
+        <div className="w-full h-full flex items-center justify-center bg-muted/30 rounded-lg p-4">
+          {src ? (
+            <Image
+              src={src}
+              alt={title}
+              width={400}
+              height={300}
+              className="rounded-md object-contain max-h-[400px]"
+            />
+          ) : (
+            <div className="w-full h-64 bg-gray-200 rounded-md animate-pulse" />
+          )}
+        </div>
       </CardContent>
       <CardFooter>
         <a href={src} download={fileName} className="w-full">
