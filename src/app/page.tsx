@@ -12,6 +12,8 @@ import { createBusinessCardMockup, type CreateBusinessCardMockupOutput } from '@
 import { createSocialMediaMockup, type CreateSocialMediaMockupOutput } from '@/ai/flows/create-social-media-mockup';
 import { generateBrandGuidelines, type GenerateBrandGuidelinesOutput } from '@/ai/flows/generate-brand-guidelines';
 import { generateBrandNames } from '@/ai/flows/generate-brand-names';
+import { previewWebsiteTheme, type PreviewWebsiteThemeOutput } from '@/ai/flows/preview-website-theme';
+
 
 import { BrandForm, type BrandFormValues } from '@/components/brand-form';
 import { ColorPaletteDisplay } from '@/components/color-palette-display';
@@ -24,7 +26,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Terminal, Wand2, Palette, Paintbrush, Loader2, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Terminal, Wand2, Palette, Paintbrush, Loader2, ArrowRight, ArrowLeft, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BackgroundAnimation } from '@/components/background-animation';
 
@@ -115,7 +117,15 @@ const PaletteSelection = ({ palettes, onSelect, onBack }: { palettes: Palette[],
 );
 
 
-const ThemeConfigForm = ({ palette, onSubmit, isLoading, onBack }: { palette: Palette, onSubmit: (data: ThemeConfigFormValues) => void, isLoading: boolean, onBack: () => void }) => {
+const ThemeConfigForm = ({ palette, onSubmit, isLoading, onBack, onPreview, isPreviewing, websitePreview }: { 
+  palette: Palette, 
+  onSubmit: (data: ThemeConfigFormValues) => void, 
+  isLoading: boolean, 
+  onBack: () => void,
+  onPreview: (data: ThemeConfigFormValues) => void,
+  isPreviewing: boolean,
+  websitePreview: PreviewWebsiteThemeOutput | null 
+}) => {
   const form = useForm<ThemeConfigFormValues>({
     resolver: zodResolver(themeConfigSchema),
   });
@@ -241,10 +251,25 @@ const ThemeConfigForm = ({ palette, onSubmit, isLoading, onBack }: { palette: Pa
     <div className="w-full max-w-7xl mt-12 animate-in fade-in duration-500">
        <div className="text-center mb-12">
         <h2 className="font-headline text-3xl md:text-5xl">Fine-tune Your Assets</h2>
-        <p className="text-muted-foreground font-body md:text-lg">Assign color roles and choose fonts for your brand assets.</p>
+        <p className="text-muted-foreground font-body md:text-lg">Assign color roles, choose fonts, and preview how they look together.</p>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-        <ColorPaletteDisplay {...palette} />
+        <div className="space-y-8">
+            <ColorPaletteDisplay {...palette} />
+            {isPreviewing && (
+                <Card className="flex items-center justify-center aspect-video bg-card/80 backdrop-blur-sm animate-pulse">
+                      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                </Card>
+            )}
+            {websitePreview && !isPreviewing && (
+                <AssetPreview
+                    title="Website Theme Preview"
+                    description="A sample hero section to preview your theme."
+                    src={websitePreview.websiteThemePreview}
+                    fileName="website-preview.png"
+                />
+            )}
+        </div>
         <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="font-headline text-2xl md:text-3xl">Configure Assets</CardTitle>
@@ -269,21 +294,35 @@ const ThemeConfigForm = ({ palette, onSubmit, isLoading, onBack }: { palette: Pa
                   </div>
                 </div>
                 <div className="flex justify-between items-center pt-4">
-                   <Button type="button" variant="outline" onClick={onBack} disabled={isLoading}>
+                   <Button type="button" variant="outline" onClick={onBack} disabled={isLoading || isPreviewing}>
                     <ArrowLeft className="mr-2 h-4 w-4" /> Back to Palettes
                   </Button>
-                  <Button type="submit" disabled={isLoading} className="text-lg py-6 font-headline bg-accent hover:bg-accent/90 text-accent-foreground">
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        Generate Final Assets <ArrowRight className="ml-2" />
-                      </>
-                    )}
-                  </Button>
+                  <div className="flex items-center gap-4">
+                    <Button type="button" variant="secondary" onClick={() => onPreview(form.getValues())} disabled={isLoading || isPreviewing}>
+                        {isPreviewing ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Previewing...
+                            </>
+                        ) : (
+                            <>
+                                <Eye className="mr-2 h-4 w-4" /> Preview Theme
+                            </>
+                        )}
+                    </Button>
+                    <Button type="submit" disabled={isLoading || isPreviewing} className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          Generate Assets <ArrowRight className="ml-2" />
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </form>
             </Form>
@@ -300,6 +339,8 @@ export default function Home() {
   const [brandInfo, setBrandInfo] = useState<BrandFormValues | null>(null);
   const [palettes, setPalettes] = useState<Palette[] | null>(null);
   const [selectedPalette, setSelectedPalette] = useState<Palette | null>(null);
+  const [websitePreview, setWebsitePreview] = useState<PreviewWebsiteThemeOutput | null>(null);
+  const [isPreviewing, setIsPreviewing] = useState(false);
   
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
@@ -331,6 +372,33 @@ export default function Home() {
   const handleSelectPalette = (palette: Palette) => {
     setSelectedPalette(palette);
     setStep(3);
+  };
+
+  const handlePreviewWebsite = async (config: ThemeConfigFormValues) => {
+    if (!brandInfo) return;
+
+    setIsPreviewing(true);
+    setWebsitePreview(null);
+    setError(null);
+
+    const headlineFontLabel = fontOptions.find(f => f.value === config.headlineFont)?.label || 'Inter';
+    const bodyFontLabel = fontOptions.find(f => f.value === config.bodyFont)?.label || 'Inter';
+
+    try {
+      const result = await previewWebsiteTheme({
+        brandName: brandInfo.brandName,
+        primaryColor: config.primaryColor,
+        backgroundColor: config.backgroundColor,
+        accentColor: config.accentColor,
+        headlineFont: headlineFontLabel,
+        bodyFont: bodyFontLabel,
+      });
+      setWebsitePreview(result);
+    } catch (e) {
+      handleError(e, 'website preview generation');
+    } finally {
+      setIsPreviewing(false);
+    }
   };
 
   const handleGenerateAssets = async (config: ThemeConfigFormValues) => {
@@ -447,7 +515,18 @@ export default function Home() {
             <div id="generator" className="mt-16 flex flex-col items-center">
               {step === 1 && <BrandForm onSubmit={handleGeneratePalettes} isLoading={isLoading} />}
               {step === 2 && palettes && <PaletteSelection palettes={palettes} onSelect={handleSelectPalette} onBack={() => setStep(1)} />}
-              {step === 3 && selectedPalette && <ThemeConfigForm palette={selectedPalette} onSubmit={handleGenerateAssets} isLoading={isLoading} onBack={() => setStep(2)} />}
+              {step === 3 && selectedPalette && <ThemeConfigForm 
+                  palette={selectedPalette} 
+                  onSubmit={handleGenerateAssets} 
+                  isLoading={isLoading} 
+                  onBack={() => {
+                    setStep(2);
+                    setWebsitePreview(null);
+                  }}
+                  onPreview={handlePreviewWebsite}
+                  isPreviewing={isPreviewing}
+                  websitePreview={websitePreview}
+                />}
 
               {isLoading && <LoadingState />}
 
@@ -500,6 +579,7 @@ export default function Home() {
                        setPalettes(null);
                        setSelectedPalette(null);
                        setBrandInfo(null);
+                       setWebsitePreview(null);
                        document.documentElement.style.setProperty('--font-headline', 'var(--font-inter)');
                        document.documentElement.style.setProperty('--font-body', 'var(--font-inter)');
                      }}>Start Over</Button>
