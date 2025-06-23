@@ -163,12 +163,6 @@ const ThemeConfigForm = ({ palette, onSubmit, isLoading, onBack, onPreview, isPr
       document.documentElement.style.setProperty('--accent', hexToHsl(accentColor));
     }
   }, [accentColor]);
-
-  useEffect(() => {
-    if (backgroundColor) {
-      document.documentElement.style.setProperty('--background', hexToHsl(backgroundColor));
-    }
-  }, [backgroundColor]);
   
   useEffect(() => {
     if (headlineFont) {
@@ -492,7 +486,6 @@ export default function Home() {
     // Reset styles to default dark theme
     document.documentElement.style.setProperty('--primary', '0 0% 98%');
     document.documentElement.style.setProperty('--accent', '0 0% 98%');
-    document.documentElement.style.setProperty('--background', '0 0% 4%');
     document.documentElement.style.setProperty('--font-headline', 'var(--font-inter)');
     document.documentElement.style.setProperty('--font-body', 'var(--font-inter)');
   };
