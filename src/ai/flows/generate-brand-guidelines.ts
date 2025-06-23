@@ -40,6 +40,18 @@ export type GenerateBrandGuidelinesInput = z.infer<
   typeof GenerateBrandGuidelinesInputSchema
 >;
 
+const BrandVoiceSchema = z.object({
+  summary: z.string().describe("A summary of the brand's overall voice and personality."),
+  attributes: z.array(z.string()).length(4).describe("An array of 4 adjectives that describe the brand voice (e.g., 'Confident', 'Witty', 'Caring')."),
+  dos: z.array(z.string()).min(3).describe("A list of 'Do' examples for writing in the brand voice."),
+  donts: z.array(z.string()).min(3).describe("A list of 'Don't' examples for writing in the brand voice."),
+  contextualTone: z.array(z.object({
+    context: z.string().describe("The communication context (e.g., 'Social Media Post', 'Customer Support Email')."),
+    tone: z.string().describe("The recommended tone for that specific context."),
+  })).min(2).describe("Examples of how to adapt the tone for different contexts while maintaining the core voice."),
+});
+
+
 const GenerateBrandGuidelinesOutputSchema = z.object({
   colorUsage: z
     .string()
@@ -56,10 +68,8 @@ const GenerateBrandGuidelinesOutputSchema = z.object({
     .describe(
       'Details on how and when to use the headline and body fonts.'
     ),
-  brandVoice: z
-    .string()
-    .describe(
-      "A short description of the brand's recommended tone and voice."
+  brandVoice: BrandVoiceSchema.describe(
+      "A detailed description of the brand's recommended tone and voice, including attributes, examples, and contextual advice."
     ),
 });
 export type GenerateBrandGuidelinesOutput = z.infer<
@@ -76,7 +86,7 @@ const prompt = ai.definePrompt({
   name: 'generateBrandGuidelinesPrompt',
   input: {schema: GenerateBrandGuidelinesInputSchema},
   output: {schema: GenerateBrandGuidelinesOutputSchema},
-  prompt: `You are a branding expert. Based on the provided brand information, generate a set of basic brand guidelines. Keep the guidelines concise, clear, and easy to understand for a non-designer.
+  prompt: `You are a branding expert. Based on the provided brand information, generate a set of basic brand guidelines.
 
 Brand Information:
 - Brand Name: {{{brandName}}}
@@ -96,10 +106,14 @@ Selected Assets:
 
 Generate the following guidelines:
 
-1.  **Color Usage:** Briefly explain the role of the primary, accent, and background colors selected by the user. Give simple advice on achieving good contrast.
-2.  **Logo Usage:** Provide two or three simple, actionable rules for using the logo. For example: "Always leave a clear space around the logo, at least the height of the main letterform." and "Don't stretch or distort the logo."
-3.  **Typography Usage:** Describe the intended use for the headline font (e.g., for major titles and impact) and the body font (e.g., for paragraphs and longer text to ensure readability).
-4.  **Brand Voice:** Based on the brand information, write 2-3 sentences describing the recommended tone of voice for brand communications (e.g., "professional and trustworthy," "playful and energetic," "calm and reassuring").
+1.  **Color Usage:** Briefly explain the role of the primary, accent, and background colors. Give simple advice on achieving good contrast.
+2.  **Logo Usage:** Provide two or three simple, actionable rules for using the logo. For example: "Always leave a clear space around the logo." and "Don't stretch or distort the logo."
+3.  **Typography Usage:** Describe the intended use for the headline font and the body font.
+4.  **Brand Voice:** Create a comprehensive brand voice and tone harmonization guide. This guide should be structured to help maintain a consistent brand personality across all communications.
+    - **Summary:** Write a 2-3 sentence summary describing the overall brand voice.
+    - **Attributes:** Provide exactly 4 key adjectives that define the voice's character (e.g., 'Professional', 'Witty', 'Empathetic').
+    - **Do's and Don'ts:** List at least 3 concrete "Do" examples and 3 "Don't" examples of the voice in action.
+    - **Contextual Tone:** Provide at least 2 examples of how the tone should adapt for different contexts while maintaining the core voice (e.g., one for a social media post and one for a customer support email).
 `,
 });
 

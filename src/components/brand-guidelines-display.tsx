@@ -13,7 +13,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Palette, Type, Gem, Mic2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Palette, Type, Gem, Mic2, Check, X } from 'lucide-react';
 import type { GenerateBrandGuidelinesOutput } from '@/ai/flows/generate-brand-guidelines';
 
 interface BrandGuidelinesDisplayProps {
@@ -23,6 +24,8 @@ interface BrandGuidelinesDisplayProps {
 export function BrandGuidelinesDisplay({
   guidelines,
 }: BrandGuidelinesDisplayProps) {
+  const { brandVoice } = guidelines;
+
   return (
     <Card className="flex flex-col h-full shadow-lg bg-card/80 backdrop-blur-sm">
       <CardHeader>
@@ -77,11 +80,58 @@ export function BrandGuidelinesDisplay({
             <AccordionTrigger>
               <div className="flex items-center gap-3">
                 <Mic2 className="h-5 w-5 text-primary" />
-                Brand Voice
+                Brand Voice & Tone
               </div>
             </AccordionTrigger>
-            <AccordionContent className="text-muted-foreground text-sm">
-              <p>{guidelines.brandVoice}</p>
+            <AccordionContent className="text-muted-foreground text-sm space-y-6 pt-2">
+                <p className="text-base">{brandVoice.summary}</p>
+                
+                <div>
+                  <h4 className="font-semibold text-foreground mb-2">Voice Attributes</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {brandVoice.attributes.map((attr) => (
+                      <Badge key={attr} variant="secondary">{attr}</Badge>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-3">Do's</h4>
+                    <ul className="space-y-2">
+                      {brandVoice.dos.map((item, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <Check className="h-4 w-4 mt-1 text-green-500 flex-shrink-0" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                   <div>
+                    <h4 className="font-semibold text-foreground mb-3">Don'ts</h4>
+                     <ul className="space-y-2">
+                      {brandVoice.donts.map((item, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <X className="h-4 w-4 mt-1 text-red-500 flex-shrink-0" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="font-semibold text-foreground mb-3">Contextual Tone</h4>
+                  <div className="space-y-3">
+                    {brandVoice.contextualTone.map((item, index) => (
+                      <div key={index} className="p-3 bg-muted/50 rounded-md border">
+                        <p className="font-semibold text-foreground">{item.context}</p>
+                        <p>{item.tone}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
             </AccordionContent>
           </AccordionItem>
         </Accordion>
