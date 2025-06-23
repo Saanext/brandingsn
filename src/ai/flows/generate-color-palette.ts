@@ -110,8 +110,27 @@ const generateColorPaletteFlow = ai.defineFlow(
     inputSchema: GenerateColorPaletteInputSchema,
     outputSchema: GenerateColorPaletteOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  async (input) => {
+    const maxRetries = 3;
+    let lastError: Error | undefined;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const { output } = await prompt(input);
+        if (output) {
+          return output;
+        }
+      } catch (e: any) {
+        lastError = e;
+        console.log(`Attempt ${attempt} to generate color palettes failed: ${e.message}`);
+        if (attempt < maxRetries) {
+          // Wait before retrying, with exponential backoff
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        }
+      }
+    }
+    
+    // If all retries fail, throw the last error
+    throw new Error(`Failed to generate color palettes after ${maxRetries} attempts. Last error: ${lastError?.message}`);
   }
 );
