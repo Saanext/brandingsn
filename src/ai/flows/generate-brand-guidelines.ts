@@ -31,6 +31,8 @@ const GenerateBrandGuidelinesInputSchema = z.object({
       keywords: z.string(),
       targetAudience: z.string(),
       coreMessage: z.string(),
+      competitors: z.string(),
+      avoid: z.string(),
     })
     .describe('The initial brand information from the quiz.'),
 });
@@ -82,6 +84,8 @@ Brand Information:
 - Personality Keywords: {{{brandInfo.keywords}}}
 - Target Audience: {{{brandInfo.targetAudience}}}
 - Core Message: {{{brandInfo.coreMessage}}}
+- Competitors: {{{brandInfo.competitors}}}
+- Things to Avoid: {{{brandInfo.avoid}}}
 
 Selected Assets:
 - Color Palette Name: {{{palette.paletteName}}}

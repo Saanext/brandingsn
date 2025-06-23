@@ -156,25 +156,16 @@ const ThemeConfigForm = ({ palette, onSubmit, isLoading, onBack, onPreview, isPr
     if (primaryColor) {
       document.documentElement.style.setProperty('--primary', hexToHsl(primaryColor));
     }
-  }, [primaryColor]);
-
-  useEffect(() => {
     if (accentColor) {
       document.documentElement.style.setProperty('--accent', hexToHsl(accentColor));
     }
-  }, [accentColor]);
-  
-  useEffect(() => {
     if (headlineFont) {
       document.documentElement.style.setProperty('--font-headline', `var(--font-${headlineFont})`);
     }
-  }, [headlineFont]);
-
-  useEffect(() => {
     if (bodyFont) {
       document.documentElement.style.setProperty('--font-body', `var(--font-${bodyFont})`);
     }
-  }, [bodyFont]);
+  }, [primaryColor, accentColor, headlineFont, bodyFont]);
 
 
   const ColorSelectField = ({ name, label }: { name: keyof ThemeConfigFormValues, label: string }) => (
@@ -415,6 +406,9 @@ export default function Home() {
         brandName: brandInfo.brandName,
         industry: brandInfo.industry,
         colorPalette: selectedPalette.colors,
+        keywords: brandInfo.keywords,
+        competitors: brandInfo.competitors,
+        avoid: brandInfo.avoid,
       });
 
       const [socialResult, businessCardResult, guidelinesResult] = await Promise.all([
@@ -445,6 +439,8 @@ export default function Home() {
                 keywords: brandInfo.keywords,
                 targetAudience: brandInfo.targetAudience,
                 coreMessage: brandInfo.coreMessage,
+                competitors: brandInfo.competitors,
+                avoid: brandInfo.avoid,
             }
         })
       ]);

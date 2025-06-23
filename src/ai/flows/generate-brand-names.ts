@@ -17,6 +17,12 @@ const GenerateBrandNamesInputSchema = z.object({
     .describe("Keywords that describe the brand's style and personality."),
   targetAudience: z.string().describe("The brand's target audience."),
   coreMessage: z.string().describe('The core message or values of the brand.'),
+  competitors: z
+    .string()
+    .describe('A list of competitors to differentiate from.'),
+  avoid: z
+    .string()
+    .describe('Things to avoid in the branding (words, styles, etc.).'),
 });
 export type GenerateBrandNamesInput = z.infer<typeof GenerateBrandNamesInputSchema>;
 
@@ -47,6 +53,8 @@ const prompt = ai.definePrompt({
   - Personality Keywords: {{{keywords}}}
   - Target Audience: {{{targetAudience}}}
   - Core Message: {{{coreMessage}}}
+  - Competitors to avoid sounding like: {{{competitors}}}
+  - Words/styles to avoid: {{{avoid}}}
 
   Please provide a diverse list of names.
 `,

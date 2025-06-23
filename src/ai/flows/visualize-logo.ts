@@ -12,9 +12,19 @@ import {z} from 'genkit';
 
 const VisualizeLogoInputSchema = z.object({
   brandName: z.string().describe('The name of the brand.'),
-  colorPalette: z.array(z.string()).describe('An array of hex color codes for the brand.'),
+  colorPalette: z
+    .array(z.string())
+    .describe('An array of hex color codes for the brand.'),
   industry: z.string().describe('The industry of the brand.'),
-  logoDescription: z.string().describe('A short description of the logo style or concept.').optional(),
+  logoDescription: z
+    .string()
+    .describe('A short description of the logo style or concept.')
+    .optional(),
+  keywords: z
+    .string()
+    .describe("Keywords that describe the brand's style and personality."),
+  competitors: z.string().describe('A list of competitors to differentiate from.'),
+  avoid: z.string().describe('Things to avoid in the logo (colors, styles, etc.).'),
 });
 export type VisualizeLogoInput = z.infer<typeof VisualizeLogoInputSchema>;
 
@@ -38,7 +48,13 @@ const visualizeLogoFlow = ai.defineFlow(
     outputSchema: VisualizeLogoOutputSchema,
   },
   async input => {
-    const prompt = `Create a logo visualization for the brand "${input.brandName}" in the "${input.industry}" industry, using the following color palette: ${input.colorPalette.join(', ')}. ${input.logoDescription ? `The user described the logo concept as: "${input.logoDescription}".` : ''} The logo should be on a clean background, include the brand name, and reflect the brand's industry. Output the generated image as a data URI.`;
+    const prompt = `Create a logo visualization for the brand "${input.brandName}" in the "${input.industry}" industry.
+The brand style is described as: "${input.keywords}".
+Use the following color palette: ${input.colorPalette.join(', ')}.
+${input.logoDescription ? `The user described the logo concept as: "${input.logoDescription}".` : ''}
+The brand wants to differentiate from these competitors: "${input.competitors}".
+Avoid the following in the logo design: "${input.avoid}".
+The logo should be on a clean background, include the brand name, and reflect the brand's industry and personality. Output the generated image as a data URI.`;
 
     const {media} = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',

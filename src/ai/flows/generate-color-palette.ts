@@ -19,6 +19,12 @@ const GenerateColorPaletteInputSchema = z.object({
     .describe("Keywords that describe the brand's style and personality."),
   targetAudience: z.string().describe("The brand's target audience."),
   coreMessage: z.string().describe('The core message or values of the brand.'),
+  competitors: z
+    .string()
+    .describe('A list of competitors to differentiate from.'),
+  avoid: z
+    .string()
+    .describe('Things to avoid in the branding (colors, styles, etc.).'),
 });
 export type GenerateColorPaletteInput = z.infer<typeof GenerateColorPaletteInputSchema>;
 
@@ -57,6 +63,8 @@ const prompt = ai.definePrompt({
   Keywords for Style & Personality: {{{keywords}}}
   Target Audience: {{{targetAudience}}}
   Core Message/Values: {{{coreMessage}}}
+  Competitors to differentiate from: {{{competitors}}}
+  Things to avoid: {{{avoid}}}
 
   Return the color palettes in the following JSON format:
   {

@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from "@/components/ui/progress";
-import { Factory, Palette, Users, Heart, Sparkles, Loader2, ArrowRight, ArrowLeft, Wand2, Tag } from 'lucide-react';
+import { Factory, Users, Heart, Sparkles, Loader2, ArrowRight, ArrowLeft, Wand2, Tag, ShieldOff, Ban } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { generateBrandNames } from '@/ai/flows/generate-brand-names';
 
@@ -20,6 +20,8 @@ const quizFormSchema = z.object({
   keywords: z.string().min(1, { message: 'Please select a personality.' }),
   targetAudience: z.string().min(3, { message: 'Please describe your target audience.' }),
   coreMessage: z.string().min(3, { message: 'Please describe your core message.' }),
+  competitors: z.string().min(3, { message: 'Please list at least one competitor, or type "none".' }),
+  avoid: z.string().min(3, { message: 'Please describe what to avoid, or type "none".' }),
 });
 
 export type BrandFormValues = z.infer<typeof quizFormSchema>;
@@ -69,11 +71,25 @@ const quizSteps = [
     description: "What is the main idea or mission you want to convey to your audience?",
     placeholder: "e.g., Connecting people, simplifying life, promoting sustainability"
   },
-    {
+  {
+    field: "competitors",
+    icon: ShieldOff,
+    title: "Step 5: Who are your competitors?",
+    description: "Listing a few helps us create a more unique identity. Type 'none' if you don't have any.",
+    placeholder: "e.g., Brand X, Competitor Y, Company Z"
+  },
+  {
+    field: "avoid",
+    icon: Ban,
+    title: "Step 6: Anything to avoid?",
+    description: "Mention any colors, styles, or words you want to stay away from. Type 'none' if you have no preferences.",
+    placeholder: "e.g., 'Avoid the color red', 'no cliché imagery'"
+  },
+  {
     field: "brandName",
-    icon: Palette,
-    title: "Step 5: What's your brand's name?",
-    description: "This will be the centerpiece of your new brand identity. Struggling? We can help suggest some names!",
+    icon: Tag,
+    title: "Step 7: What's your brand's name?",
+    description: "This is the centerpiece of your identity. Struggling? We can suggest some names!",
     placeholder: "e.g., Nova Robotics"
   },
 ];
@@ -91,6 +107,8 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
       keywords: '',
       targetAudience: '',
       coreMessage: '',
+      competitors: '',
+      avoid: '',
     },
     mode: 'onTouched',
   });
@@ -114,7 +132,7 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
 
   const handleSuggestNames = async () => {
     const values = form.getValues();
-    const { industry, keywords, targetAudience, coreMessage } = values;
+    const { industry, keywords, targetAudience, coreMessage, competitors, avoid } = values;
 
     setIsSuggesting(true);
     setNameSuggestions([]);
@@ -123,7 +141,9 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
             industry,
             keywords,
             targetAudience,
-            coreMessage
+            coreMessage,
+            competitors,
+            avoid,
         });
         setNameSuggestions(result.names);
     } catch (error) {
