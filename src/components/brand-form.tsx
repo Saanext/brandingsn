@@ -30,18 +30,14 @@ interface BrandFormProps {
 }
 
 const personalityOptions = [
-  'Modern',
-  'Classic',
-  'Playful',
-  'Serious',
-  'Luxurious',
-  'Accessible',
-  'Bold',
-  'Minimalist',
-  'Feminine',
-  'Masculine',
-  'Natural',
-  'Techy',
+  'Elegant & Sophisticated',
+  'Bold & Energetic',
+  'Minimal & Modern',
+  'Playful & Creative',
+  'Trustworthy & Professional',
+  'Friendly & Accessible',
+  'Natural & Grounded',
+  'Innovative & Tech-Forward',
 ];
 
 const quizSteps = [
@@ -55,9 +51,9 @@ const quizSteps = [
   {
     field: "keywords",
     icon: Sparkles,
-    title: "Step 2: What's your brand's personality?",
-    description: "Choose the adjective that best describes your brand's desired feel.",
-    placeholder: "Select a personality type"
+    title: "Step 2: Define Your Brand's Style",
+    description: "Select the keyword that best captures the essence and personality you're aiming for.",
+    placeholder: "Select a brand style"
   },
   {
     field: "targetAudience",
