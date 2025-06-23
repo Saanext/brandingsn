@@ -91,7 +91,7 @@ const PaletteSelection = ({ palettes, onSelect, onBack }: { palettes: Palette[],
       <h2 className="font-headline text-3xl md:text-5xl">Choose Your Color Story</h2>
       <p className="text-muted-foreground font-body md:text-lg max-w-3xl mx-auto">Your brand profile has inspired these unique color palettes. Select one to continue building your brand identity.</p>
     </div>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {palettes.map((palette) => (
         <Card key={palette.paletteName} className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group overflow-hidden bg-card/80 backdrop-blur-sm" onClick={() => onSelect(palette)}>
           <CardContent className="p-0">
@@ -348,7 +348,7 @@ export default function Home() {
 
     try {
       const paletteData = await generateColorPalette(data);
-      if (!paletteData.palettes || paletteData.palettes.length < 4) {
+      if (!paletteData.palettes || paletteData.palettes.length < 6) {
         throw new Error('AI failed to generate enough color palettes.');
       }
       setPalettes(paletteData.palettes);

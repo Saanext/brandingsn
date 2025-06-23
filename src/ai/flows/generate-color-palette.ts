@@ -40,8 +40,8 @@ const PaletteSchema = z.object({
 const GenerateColorPaletteOutputSchema = z.object({
   palettes: z
     .array(PaletteSchema)
-    .length(4)
-    .describe('An array of 4 distinct color palettes.'),
+    .length(6)
+    .describe('An array of 6 distinct color palettes.'),
 });
 export type GenerateColorPaletteOutput = z.infer<typeof GenerateColorPaletteOutputSchema>;
 
@@ -55,7 +55,7 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateColorPaletteOutputSchema},
   prompt: `You are an expert branding consultant who specializes in color palette generation.
 
-  Based on the brand information, generate 4 distinct and diverse color palettes. Each palette should explore a different mood or direction (e.g., one professional and serious, one vibrant and energetic, one calm and minimalist, one luxurious and elegant). Each palette must have exactly 5 colors.
+  Based on the brand information, generate 6 distinct and diverse color palettes. Each palette should explore a different mood or direction (e.g., one professional and serious, one vibrant and energetic, one calm and minimalist, one luxurious and elegant). Each palette must have exactly 5 colors.
   For each palette, provide a unique palette name, a short description, and an array of 5 hex color codes.
 
   Brand Name: {{{brandName}}}
@@ -87,6 +87,16 @@ const prompt = ai.definePrompt({
       {
         "paletteName": "Palette Name 4",
         "description": "Description of the fourth color palette",
+        "colors": ["#RRGGBB", "#RRGGBB", "#RRGGBB", "#RRGGBB", "#RRGGBB"]
+      },
+      {
+        "paletteName": "Palette Name 5",
+        "description": "Description of the fifth color palette",
+        "colors": ["#RRGGBB", "#RRGGBB", "#RRGGBB", "#RRGGBB", "#RRGGBB"]
+      },
+      {
+        "paletteName": "Palette Name 6",
+        "description": "Description of the sixth color palette",
         "colors": ["#RRGGBB", "#RRGGBB", "#RRGGBB", "#RRGGBB", "#RRGGBB"]
       }
     ]
